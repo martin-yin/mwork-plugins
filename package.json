@@ -1,0 +1,22 @@
+{
+  "name": "work-webpack",
+  "version": "1.0.0",
+  "description": "工作中开发的 webpack 插件 or loader",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martin-yin/work-webpack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/martin-yin/work-webpack/issues"
+  },
+  "homepage": "https://github.com/martin-yin/work-webpack#readme",
+  "dependencies": {
+    "@swc/core": "^1.3.86",
+    "@vue/compiler-dom": "^3.3.4",
+    "ignore": "^5.2.4"
+  }
+}
