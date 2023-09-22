@@ -35,7 +35,7 @@
 ## SafeDeleteFile ModulesAnalysis 使用案例
 
 ```
-cd `sample/use-work-webpack-plugins`
+cd sample/use-work-webpack-plugins
 
 npm i && npm run build
 
