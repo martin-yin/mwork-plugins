@@ -7,9 +7,9 @@ const pluginName = "ModulesAnalysis"
 
 class ModulesAnalysis {
   constructor(options) {
-    this.packageNodeModules = this.getPackageNodeModules();
     this.acceptType = options?.acceptType || ['vue', 'js', 'jsx', 'tsx', 'ts']
     this.ignoreModules = options?.ignoreModules || ['vue', 'vue-router']
+    this.packageNodeModules = this.getPackageNodeModules();
   }
 
 
@@ -117,11 +117,13 @@ class ModulesAnalysis {
   calculateModuleUseInfo(filesModuleMap) {
     const moduleInfo = [];
     filesModuleMap.forEach((value, key) => {
-      moduleInfo.push({
-        name: key,
-        total: value.length,
-        files: value
-      })
+      if (!this.ignoreModules.includes(key)) {
+        moduleInfo.push({
+          name: key,
+          total: value.length,
+          files: value
+        })
+      }
     })
     return moduleInfo
   }

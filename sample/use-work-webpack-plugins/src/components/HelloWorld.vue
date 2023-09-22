@@ -31,10 +31,23 @@
 </template>
 
 <script>
+
+import axios from "axios"
+const dayjs = require("dayjs")
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  methods: {
+    getNow() {
+      return dayjs();
+    },
+
+    getData() {
+      return axios.get('/getData')
+    }
   }
 }
 </script>

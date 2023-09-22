@@ -2,13 +2,95 @@
 
 工作中开发的 webpack 插件 or loader
 
-
 ## plugins
 
 ### ModulesAnalysis
 
-用于分析项目中 node_modules 使用的次数与方式。
+用于分析项目中 `node_modules` 使用的次数与方式。
+
+分析出项目中每个包的使用情况，使开发者能够分析哪些包可以更进一步的做优化。
+
+#### options
+
+|名称|类型|描述|默认值|
+|:--:|:--:|:----------|:----------|
+|**`acceptType`**|`{Array}`| 文件类型| 默认值: `['vue', 'js', 'jsx', 'tsx', 'ts']` |
+|**`ignoreModules`**|`{Array}`|需要被忽略的 node_module 名称| 默认值: `['vue', 'vue-router']`|
+
 
 ### SafeDeleteFile
 
 用于分析项目中有哪些文件没有被使用，也许可以安全删除。
+
+在老项目不停的迭代，有些代码或文件也许早已没有作用，但开发者不知道哪些文件可以安全删除。那么你可以试试这个插件！
+
+#### options
+|名称|类型|描述|默认值|
+|:--:|:--:|:----------|:----------|
+|**`folderPath`**|`{String}`|文件路径|默认值: `cli`执行目录下`src` |
+|**`ignore`**|`{String}` `{Array}`|需要被忽略文件夹或文件| 默认值: []|
+
+
+
+## SafeDeleteFile ModulesAnalysis 使用案例
+
+```
+cd `sample/use-work-webpack-plugins`
+
+npm i && npm run build
+
+```
+
+构建后会生成 `modulesAnalysis.json` 和 `safeDeleteFile.json` 两个文件
+
+### safeDeleteFile.json
+
+```js
+
+[
+    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\aleksandr-popov-Hkrp734cElQ-unsplash.jpg",
+    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\devon-hawkins-YW_xD_j50UI-unsplash.jpg",
+    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\neom-JZerhwPHiBI-unsplash.jpg",
+    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\CustomModal.vue",
+    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\not-use.js"
+]
+
+```
+### modulesAnalysis.json
+```js
+
+[
+    {
+        "name": "ant-design-vue",
+        "total": 1,
+        "files": [
+            {
+                "filePath": "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\main.js",
+                "useType": "require"
+            }
+        ]
+    },
+    {
+        "name": "axios",
+        "total": 1,
+        "files": [
+            {
+                "filePath": "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\HelloWorld.vue",
+                "useType": "import"
+            }
+        ]
+    },
+    {
+        "name": "dayjs",
+        "total": 1,
+        "files": [
+            {
+                "filePath": "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\HelloWorld.vue",
+                "useType": "require"
+            }
+        ]
+    }
+]
+
+```
+
