@@ -130,7 +130,7 @@ class ModulesAnalysis {
     if (filePath.includes('node_modules')) {
       return false
     }
-    return this.fileType.includes(filePath.split('.').pop())
+    return this.acceptType.includes(filePath.split('.').pop())
   }
 
   apply(compiler) {
