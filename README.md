@@ -16,6 +16,8 @@
 |:--:|:--:|:----------|:----------|
 |**`acceptType`**|`{Array}`| 文件类型| 默认值: `['vue', 'js', 'jsx', 'tsx', 'ts']` |
 |**`ignoreModules`**|`{Array}`|需要被忽略的 node_module 名称| 默认值: `['vue', 'vue-router']`|
+|**`outputType`**|`{String}`|输出方式, 支持 `json` `markdown` | 默认值: `'json'`|
+
 
 
 ### SafeDeleteFile
@@ -29,8 +31,7 @@
 |:--:|:--:|:----------|:----------|
 |**`folderPath`**|`{String}`|文件路径|默认值: `cli`执行目录下`src` |
 |**`ignore`**|`{String}` `{Array}`|需要被忽略文件夹或文件| 默认值: []|
-
-
+|**`outputType`**|`{String}`|输出方式, 支持 `json` `markdown` | 默认值: `'json'`|
 
 ## SafeDeleteFile ModulesAnalysis 使用案例
 
