@@ -47,36 +47,23 @@ npm i && npm run build
 ### safeDeleteFile.json
 
 ```js
-
 [
-    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\aleksandr-popov-Hkrp734cElQ-unsplash.jpg",
-    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\devon-hawkins-YW_xD_j50UI-unsplash.jpg",
-    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\neom-JZerhwPHiBI-unsplash.jpg",
-    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\CustomModal.vue",
-    "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\not-use.js"
+    "src\\assets\\aleksandr-popov-Hkrp734cElQ-unsplash.jpg",
+    "src\\assets\\devon-hawkins-YW_xD_j50UI-unsplash.jpg",
+    "src\\assets\\neom-JZerhwPHiBI-unsplash.jpg",
+    "src\\components\\CustomModal.vue",
+    "src\\not-use.js"
 ]
-
 ```
 ### modulesAnalysis.json
 ```js
-
 [
-    {
-        "name": "ant-design-vue",
-        "total": 1,
-        "files": [
-            {
-                "filePath": "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\main.js",
-                "useType": "require"
-            }
-        ]
-    },
     {
         "name": "axios",
         "total": 1,
         "files": [
             {
-                "filePath": "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\HelloWorld.vue",
+                "filePath": "src\\components\\HelloWorld.vue",
                 "useType": "import"
             }
         ]
@@ -86,12 +73,21 @@ npm i && npm run build
         "total": 1,
         "files": [
             {
-                "filePath": "C:\\Users\\Administrator\\Desktop\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\HelloWorld.vue",
+                "filePath": "src\\components\\HelloWorld.vue",
+                "useType": "require"
+            }
+        ]
+    },
+    {
+        "name": "ant-design-vue",
+        "total": 1,
+        "files": [
+            {
+                "filePath": "src\\main.js",
                 "useType": "require"
             }
         ]
     }
 ]
-
 ```
 
