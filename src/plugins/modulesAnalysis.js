@@ -134,7 +134,7 @@ class ModulesAnalysis {
     return this.acceptType.includes(filePath.split('.').pop())
   }
 
-  outputTypeResult(result) {
+  outputResult(result) {
     if (this.outputType === 'markdown') {
       this.outputResultWithMarkdown(result)
       return
@@ -163,8 +163,8 @@ class ModulesAnalysis {
     compiler.hooks.done.tap(pluginName, async (stats) => {
       const filesPath = [...stats.compilation.fileDependencies].filter((filePath) => this.isAcceptFile(filePath))
       const filesModuleMap = await this.getNodeModuleFilesMap(filesPath)
-      const moduleUseInfo = this.calculateModuleUseInfo(filesModuleMap);
-      this.outputTypeResult(moduleUseInfo)
+      const result = this.calculateModuleUseInfo(filesModuleMap);
+      this.outputResult(result)
     })
   }
 }

@@ -40,7 +40,7 @@ class SafeDeleteFile {
         return differenceFiles
     }
 
-    outputTypeResult(result) {
+    outputResult(result) {
         if (this.outputType === 'markdown') {
             this.outputResultWithMarkdown(result)
             return
@@ -61,8 +61,8 @@ class SafeDeleteFile {
 
     apply(compiler) {
         compiler.hooks.done.tap(pluginName, (stats) => {
-            const safeDeleteFile = this.getFilesDifference(this.allFolderFiles, [...stats.compilation.fileDependencies])
-            this.outputTypeResult(safeDeleteFile)
+            const result = this.getFilesDifference(this.allFolderFiles, [...stats.compilation.fileDependencies])
+            this.outputResult(result)
         })
     }
 }
