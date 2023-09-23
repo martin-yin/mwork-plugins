@@ -149,7 +149,7 @@ class ModulesAnalysis {
       markdownContent.push({ h3: `使用次数: ${item.total}` })
       item.files.forEach(({ filePath, useType }) => {
         markdownContent.push({ p: `文件: ${filePath}` })
-        markdownContent.push({ p: `使用方式：: ${useType}` })
+        markdownContent.push({ p: `使用方式：${useType}` })
       })
     })
     fs.writeFileSync('./modulesAnalysis.md', json2md([{ h1: `${pluginName}分析结果` }, ...markdownContent]))
