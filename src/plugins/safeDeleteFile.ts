@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { writeFile } from '../utils';
 import { safeDeleteFileMarkdown } from '../helpers';
-const Ignore = require('ignore');
+import type { Compiler } from 'webpack';
+import Ignore from 'ignore';
 
 abstract class SafeDeleteFileIf {
   /**
@@ -24,7 +25,7 @@ abstract class SafeDeleteFileIf {
    * @desc webpack apply
    * @param compiler
    */
-  abstract apply(compiler: any): void;
+  abstract apply(compiler: Compiler): void;
 }
 
 const pluginName = 'SafeDeleteFile';
@@ -33,16 +34,21 @@ class SafeDeleteFile extends SafeDeleteFileIf {
   folderPath: string;
   ignore: any;
   outputType: string;
-  allFolderFiles: Array<string>;
+  files: Array<string>;
 
   constructor(options: { folderPath: string; ignore: string; outputType: string; allFolderFiles: Array<string> }) {
     super();
     this.folderPath = options?.folderPath || path.join(process.cwd(), '/src');
     this.ignore = Ignore().add(['node_modules', '.git'].concat(options?.ignore || []));
     this.outputType = options?.outputType || 'json';
-    this.allFolderFiles = this.getFilesByFolder(this.folderPath);
+    this.files = this.getFilesByFolder(this.folderPath);
   }
 
+  /**
+   * @desc 获取文件
+   * @param folderPath
+   * @returns Array<string>
+   */
   getFilesByFolder(folderPath: string) {
     const files: Array<string> = [];
     const { ignore } = this;
@@ -63,23 +69,33 @@ class SafeDeleteFile extends SafeDeleteFileIf {
     return files;
   }
 
+  /**
+   * @desc
+   * @param fileDependencies
+   * @returns Array<string>
+   */
   getDifferenceFiles(fileDependencies: Array<string>) {
     const cwd = process.cwd() + '\\';
-    const differenceFiles = this.allFolderFiles
+    const differenceFiles = this.files
       .filter(item => !fileDependencies.includes(item))
       .map(filePath => filePath.replace(cwd, ''));
+
     return differenceFiles;
   }
 
+  /**
+   * @desc 输出文件
+   * @param content
+   */
   outPutFile(content: Array<string>) {
-    if (this.outputType === 'markdonw') {
-      writeFile(`./${pluginName}.json`, safeDeleteFileMarkdown(content));
+    if (this.outputType === 'markdown') {
+      writeFile(`./${pluginName}.md`, safeDeleteFileMarkdown(content));
     }
     writeFile(`./${pluginName}.json`, JSON.stringify(content));
   }
 
-  apply(compiler: any) {
-    compiler.hooks.done.tap(pluginName, (stats: any) => {
+  apply(compiler: Compiler) {
+    compiler.hooks.done.tap(pluginName, stats => {
       const result = this.getDifferenceFiles([...stats.compilation.fileDependencies]);
       this.outPutFile(result);
     });
