@@ -3,107 +3,50 @@ import path from 'node:path';
 import swc from '@swc/core';
 import vueCompiler from '@vue/compiler-dom';
 import json2md from 'json2md';
+import { Compiler } from 'webpack';
+import { getCodeByFilePath, getNodeModules, parseCode } from '../utils';
 
 const pluginName = 'ModulesAnalysis';
 
-class ModulesAnalysis {
-  acceptType: any;
-  ignoreModules: any;
-  outputType: any;
-  packageNodeModules: string[];
+abstract class ModulesAnalysisIf {
+  abstract isAcceptFile(file: string): boolean;
+
+  abstract getNodeModuleFilesMap(files: Array<string>): any;
+
+  abstract calculateModuleUseInfo(data: any): any;
+
+  abstract outPutFile(content: Array<string>): void;
+
+  apply(compiler: Compiler): void {}
+}
+class ModulesAnalysis implements ModulesAnalysisIf {
+  private acceptType: Array<string> = [];
+  private ignoreModules: Array<string> = [];
+  private outputType: 'json' | 'markdonw';
+  private packageNodeModules: string[] = [];
 
   constructor(options: any) {
     this.acceptType = options?.acceptType || ['vue', 'js', 'jsx', 'tsx', 'ts'];
     this.ignoreModules = options?.ignoreModules || ['vue', 'vue-router'];
     this.outputType = options?.outputType || 'json';
-    this.packageNodeModules = this.getPackageNodeModules();
+    // this.packageNodeModules = this.getPackageNodeModules();
   }
 
-  getImportOrRequireName(value) {
-    const regexp = /\//g;
-    if (!regexp.test(value)) {
-      return value;
-    }
-    return value.split('/')[0] || null;
-  }
-
-  isNodeModule(value) {
-    return this.packageNodeModules?.includes(value) || false;
-  }
-
-  getModules(ast) {
-    const modules = [];
-    ast.forEach(element => {
-      let value = null;
-      let useType = 'import';
-
-      if (element.type === 'ImportDeclaration') {
-        value = element.source.value;
-      }
-
-      if (element.type === 'VariableDeclaration') {
-        const { init } = element?.declarations[0];
-        if (init?.callee?.value === 'require') {
-          value = init?.arguments[0]?.expression?.value;
-          useType = 'require';
-        }
-      }
-      const module = this.getImportOrRequireName(value);
-      module && modules.push({ useType, value: module });
-    });
-
-    return modules;
-  }
-
-  getPackageNodeModules() {
-    const packageJson = JSON.parse(
-      fs.readFileSync(path.join(process.cwd(), './package.json'), {
-        encoding: 'utf-8'
-      })
-    );
-
-    const packageNodeModules = [...Object.keys(packageJson.dependencies), ...Object.keys(packageJson.devDependencies)];
-    return packageNodeModules;
-  }
-
-  getScriptCode(filePath) {
-    const code = fs.readFileSync(filePath, {
-      encoding: 'utf-8'
-    });
-
-    if (!filePath.endsWith('.vue')) {
-      return code;
+  isAcceptFile(file: string) {
+    if (file.includes('node_modules')) {
+      return false;
     }
 
-    let scriptCode = '';
-    const { children } = vueCompiler.parse(code);
-    children.forEach(element => {
-      if (element?.tag === 'script') {
-        scriptCode = element.children[0].content;
-      }
-    });
-    return scriptCode;
+    return this.acceptType.includes(file.split('.')?.pop() || '');
   }
 
-  async parseCodeToAstByFilePath(filePath) {
-    const code = this.getScriptCode(filePath);
-    const { body } = await swc.parse(code, {
-      syntax: 'typescript',
-      comments: false,
-      script: true,
-      target: 'es5',
-      isModule: true,
-      tsx: true
-    });
-    return body;
-  }
-
-  async getNodeModuleFilesMap(filePathList) {
+  async getNodeModuleFilesMap(files: Array<string>) {
     const cwd = process.cwd() + '\\';
     const nodeModuleFilesMap = new Map();
-    const nodeModulePromises = filePathList.map(async filePath => {
-      const ast = await this.parseCodeToAstByFilePath(filePath);
-      const nodeModules = this.getModules(ast).filter(module => this.isNodeModule(module.value));
+    const nodeModulePromises = files.map(async file => {
+      const code = getCodeByFilePath(file);
+      const ast = await parseCode(code);
+      const nodeModules = getNodeModules(ast);
       if (nodeModules.length) {
         nodeModules.forEach(module => {
           const { value, useType } = module;
@@ -111,7 +54,7 @@ class ModulesAnalysis {
           nodeModuleFilesMap.set(value, [
             ...nodeModuleFilesMapValue,
             {
-              filePath: filePath.replace(cwd, ''),
+              filePath: file.replace(cwd, ''),
               useType
             }
           ]);
@@ -122,58 +65,13 @@ class ModulesAnalysis {
     return nodeModuleFilesMap;
   }
 
-  calculateModuleUseInfo(filesModuleMap) {
-    const moduleInfo = [];
-    filesModuleMap.forEach((value, key) => {
-      if (!this.ignoreModules.includes(key)) {
-        moduleInfo.push({
-          name: key,
-          total: value.length,
-          files: value
-        });
-      }
-    });
-    return moduleInfo;
+  outPutFile(content: string[]): void {
+    throw new Error('Method not implemented.');
   }
 
-  isAcceptFile(filePath) {
-    if (filePath.includes('node_modules')) {
-      return false;
-    }
-    return this.acceptType.includes(filePath.split('.').pop());
-  }
-
-  outputResult(result) {
-    if (this.outputType === 'markdown') {
-      this.outputResultWithMarkdown(result);
-      return;
-    }
-    this.outputResultByJson(result);
-  }
-
-  outputResultWithMarkdown(result) {
-    const markdownContent = [];
-    result.forEach(item => {
-      markdownContent.push({ h2: item.name });
-      markdownContent.push({ h3: `使用次数: ${item.total}` });
-      item.files.forEach(({ filePath, useType }) => {
-        markdownContent.push({ p: `文件: ${filePath}` });
-        markdownContent.push({ p: `使用方式：${useType}` });
-      });
-    });
-    fs.writeFileSync('./modulesAnalysis.md', json2md([{ h1: `${pluginName}分析结果` }, ...markdownContent]));
-  }
-
-  outputResultByJson(result) {
-    fs.writeFileSync('./modulesAnalysis.json', JSON.stringify(result));
-  }
-
-  apply(compiler) {
+  apply(compiler: Compiler) {
     compiler.hooks.done.tap(pluginName, async stats => {
       const filesPath = [...stats.compilation.fileDependencies].filter(filePath => this.isAcceptFile(filePath));
-      const filesModuleMap = await this.getNodeModuleFilesMap(filesPath);
-      const result = this.calculateModuleUseInfo(filesModuleMap);
-      this.outputResult(result);
     });
   }
 }
