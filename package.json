@@ -2,8 +2,10 @@
   "name": "work-webpack",
   "version": "1.0.0",
   "description": "工作中开发的 webpack 插件 or loader",
-  "main": "./src/index.js",
-  "scripts": {},
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsup"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/martin-yin/work-webpack.git"
@@ -19,5 +21,16 @@
     "@vue/compiler-dom": "^3.3.4",
     "ignore": "^5.2.4",
     "json2md": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/json2md": "^1.5.2",
+    "@types/node": "^20.8.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2",
+    "tsup": "^7.2.0"
   }
 }

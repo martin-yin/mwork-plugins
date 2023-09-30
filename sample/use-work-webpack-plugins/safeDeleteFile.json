@@ -1,7 +1,7 @@
 [
-    "C:\\Users\\Administrator\\Desktop\\vue2\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\aleksandr-popov-Hkrp734cElQ-unsplash.jpg",
-    "C:\\Users\\Administrator\\Desktop\\vue2\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\devon-hawkins-YW_xD_j50UI-unsplash.jpg",
-    "C:\\Users\\Administrator\\Desktop\\vue2\\work-webpack\\sample\\use-work-webpack-plugins\\src\\assets\\neom-JZerhwPHiBI-unsplash.jpg",
-    "C:\\Users\\Administrator\\Desktop\\vue2\\work-webpack\\sample\\use-work-webpack-plugins\\src\\components\\CustomModal.vue",
-    "C:\\Users\\Administrator\\Desktop\\vue2\\work-webpack\\sample\\use-work-webpack-plugins\\src\\not-use.js"
+    "src\\assets\\aleksandr-popov-Hkrp734cElQ-unsplash.jpg",
+    "src\\assets\\devon-hawkins-YW_xD_j50UI-unsplash.jpg",
+    "src\\assets\\neom-JZerhwPHiBI-unsplash.jpg",
+    "src\\components\\CustomModal.vue",
+    "src\\not-use.js"
 ]
