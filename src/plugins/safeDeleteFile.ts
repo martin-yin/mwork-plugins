@@ -4,40 +4,17 @@ import { writeFile } from '../utils';
 import { safeDeleteFileMarkdown } from '../helpers';
 import type { Compiler } from 'webpack';
 import Ignore from 'ignore';
-
-abstract class SafeDeleteFileIf {
-  /**
-   * @desc 根据传递进来的路径去获取路径下所有的文件。
-   * @param folderPath
-   */
-  abstract getFilesByFolder(folderPath: string): Array<string>;
-  /**
-   * @desc 获取到差异文件，差异文件就是没有使用到的文件。
-   * @param fileDependencies
-   */
-  abstract getDifferenceFiles(fileDependencies: Array<string>): Array<string>;
-  /**
-   * @desc 输出对比的结果，输出方式根据 outputType 配置决定。
-   * @param content
-   */
-  abstract outPutFile(content: Array<string>): void;
-  /**
-   * @desc webpack apply
-   * @param compiler
-   */
-  abstract apply(compiler: Compiler): void;
-}
+import { SafeDeleteFileType } from '../types';
 
 const pluginName = 'SafeDeleteFile';
 
-class SafeDeleteFile extends SafeDeleteFileIf {
+class SafeDeleteFile implements SafeDeleteFileType.ISafeDeleteFile {
   folderPath: string;
   ignore: any;
   outputType: string;
   files: Array<string>;
 
-  constructor(options: { folderPath: string; ignore: string; outputType: string; allFolderFiles: Array<string> }) {
-    super();
+  constructor(options: SafeDeleteFileType.options) {
     this.folderPath = options?.folderPath || path.join(process.cwd(), '/src');
     this.ignore = Ignore().add(['node_modules', '.git'].concat(options?.ignore || []));
     this.outputType = options?.outputType || 'json';

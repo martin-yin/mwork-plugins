@@ -6,23 +6,7 @@ async function parseCode(code: string): Promise<Module['body']> {
   return body;
 }
 
-function getNodeModules(ast: Module['body']) {
-  const modules: Array<{
-    useType: string;
-    value: string;
-  }> = [];
-
-  ast.forEach(element => {
-    let value = getNodeModule(element);
-    if (value) {
-      modules.push({ ...value });
-    }
-  });
-
-  return modules;
-}
-
-function getNodeModule(element: ModuleItem) {
+function getImport(element: ModuleItem) {
   if (element.type === 'ImportDeclaration') {
     return {
       value: element.source.value,
@@ -46,6 +30,23 @@ function getNodeModule(element: ModuleItem) {
   return null;
 }
 
+async function getImportsByCode(code: string) {
+  const imports: Array<{
+    useType: string;
+    value: string;
+  }> = [];
+  const ast = await parseCode(code);
+
+  ast.forEach(element => {
+    let value = getImport(element);
+    if (value) {
+      imports.push({ ...value });
+    }
+  });
+
+  return imports;
+}
+
 function isNodeModule(value: string, node_modules: Array<string>) {
   if (!node_modules.includes(value)) {
     return false;
@@ -53,4 +54,4 @@ function isNodeModule(value: string, node_modules: Array<string>) {
   return true;
 }
 
-export { parseCode, getNodeModules, isNodeModule };
+export { parseCode, getImportsByCode, isNodeModule };

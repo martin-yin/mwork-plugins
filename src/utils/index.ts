@@ -1,3 +1,3 @@
 export * from './code';
-export * from './parse-ast';
+export * from './swc-parse';
 export * from './output';
