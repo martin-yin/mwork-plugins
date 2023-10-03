@@ -1,3 +1,5 @@
 import SafeDeleteFile from './plugins/safeDeleteFile';
 
-export { SafeDeleteFile };
+import ModulesAnalysis from './plugins/modulesAnalysis';
+
+export { SafeDeleteFile, ModulesAnalysis };

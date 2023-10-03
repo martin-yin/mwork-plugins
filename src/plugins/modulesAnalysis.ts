@@ -8,12 +8,11 @@ import { ModulesAnalysisType } from '../types';
 const pluginName = 'ModulesAnalysis';
 
 class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
+  private cwd = process.cwd() + '\\';
   private acceptType: Array<string> = [];
   private ignoreModules: Array<string> = [];
   private packageNodeModules: string[] = [];
   private outputType: 'json' | 'markdown';
-
-  private cwd = process.cwd() + '\\';
 
   constructor(options: ModulesAnalysisType.options) {
     this.acceptType = options?.acceptType || ['vue', 'js', 'jsx', 'tsx', 'ts'];
@@ -34,15 +33,26 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
     return packageNodeModules;
   }
 
-  calculateModuleUseInfo(filesModuleMap: Map<any, any>) {
+  calculateModuleUseInfo(
+    filesModuleMap: Map<
+      string,
+      Array<{
+        filePath: string;
+        useType: string;
+      }>
+    >
+  ) {
     const moduleInfo: Array<{
       name: string;
       total: number;
-      files: Array<string>;
+      files: Array<{
+        filePath: string;
+        useType: string;
+      }>;
     }> = [];
 
     filesModuleMap.forEach((value, key) => {
-      if (!this.ignoreModules.includes(key) && this.packageNodeModules.includes(value)) {
+      if (!this.ignoreModules.includes(key) && this.packageNodeModules.includes(key)) {
         moduleInfo.push({
           name: key,
           total: value.length,
@@ -63,7 +73,13 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
   }
 
   async getImportsFilesMap(files: Array<string>) {
-    const importsFilesMap = new Map();
+    const importsFilesMap = new Map<
+      string,
+      Array<{
+        filePath: string;
+        useType: string;
+      }>
+    >();
     const importsPromises = files.map(async file => {
       const code = getCodeByFilePath(file);
       const imports = await getImportsByCode(code);
@@ -95,7 +111,6 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
 
   apply(compiler: Compiler) {
     compiler.hooks.done.tap(pluginName, async stats => {
-      debugger;
       const filesPath = [...stats.compilation.fileDependencies].filter(filePath => this.isAcceptFile(filePath));
       const filesModuleMap = await this.getImportsFilesMap(filesPath);
       const result = this.calculateModuleUseInfo(filesModuleMap);

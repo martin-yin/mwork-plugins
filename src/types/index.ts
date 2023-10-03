@@ -37,10 +37,21 @@ export namespace ModulesAnalysisType {
 
     abstract getImportsFilesMap(files: Array<string>): any;
 
-    abstract calculateModuleUseInfo(filesModuleMap: Map<any, any>): Array<{
+    abstract calculateModuleUseInfo(
+      filesModuleMap: Map<
+        string,
+        Array<{
+          filePath: string;
+          useType: string;
+        }>
+      >
+    ): Array<{
       name: string;
       total: number;
-      files: Array<string>;
+      files: Array<{
+        filePath: string;
+        useType: string;
+      }>;
     }>;
 
     abstract outPutFile(content: Array<string>): void;
