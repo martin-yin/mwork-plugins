@@ -67,6 +67,7 @@ class SafeDeleteFile implements ISafeDeleteFile {
   outPutFile(content: Array<string>) {
     if (this.outputType === 'markdown') {
       writeFile(`./${pluginName}.md`, safeDeleteFileMarkdown(content));
+      return;
     }
     writeFile(`./${pluginName}.json`, JSON.stringify(content));
   }

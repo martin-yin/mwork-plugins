@@ -33,9 +33,9 @@ class ModulesAnalysis implements IModulesAnalysis {
     );
 
     const packageNodeModules = [
-      ...Object.keys(packageJson.peerDependencies),
-      ...Object.keys(packageJson.dependencies),
-      ...Object.keys(packageJson.devDependencies)
+      ...(packageJson?.peerDependencies ? Object.keys(packageJson.peerDependencies) : []),
+      ...(packageJson?.dependencies ? Object.keys(packageJson.dependencies) : []),
+      ...(packageJson?.devDependencies ? Object.keys(packageJson.devDependencies) : [])
     ];
     return packageNodeModules;
   }
@@ -91,6 +91,7 @@ class ModulesAnalysis implements IModulesAnalysis {
   outPutFile(content: ModulesUseInfoType) {
     if (this.outputType === 'markdown') {
       writeFile(`./${pluginName}.md`, modulesAnalysisMarkdown(content));
+      return;
     }
     writeFile(`./${pluginName}.json`, JSON.stringify(content));
   }
