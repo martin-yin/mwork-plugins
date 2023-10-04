@@ -13,8 +13,10 @@ class SafeDeleteFile implements ISafeDeleteFile {
   ignore: any;
   outputType: string;
   files: Array<string>;
+  cwd: string;
 
   constructor(options: SafeDeleteFileOptions) {
+    this.cwd = process.cwd();
     this.folderPath = options?.folderPath || path.join(process.cwd(), '/src');
     this.ignore = Ignore().add(['node_modules', '.git'].concat(options?.ignore || []));
     this.outputType = options?.outputType || 'json';
@@ -52,10 +54,9 @@ class SafeDeleteFile implements ISafeDeleteFile {
    * @returns Array<string>
    */
   getDifferenceFiles(fileDependencies: Array<string>) {
-    const cwd = process.cwd() + '\\';
     const differenceFiles = this.files
       .filter(item => !fileDependencies.includes(item))
-      .map(filePath => filePath.replace(cwd, ''));
+      .map(filePath => filePath.replace(this.cwd, ''));
 
     return differenceFiles;
   }

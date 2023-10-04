@@ -8,7 +8,7 @@ import { IModulesAnalysis, ImportsFilesMapType, ModulesAnalysisOptions, ModulesU
 const pluginName = 'ModulesAnalysis';
 
 class ModulesAnalysis implements IModulesAnalysis {
-  private cwd = process.cwd() + '\\';
+  private cwd = process.cwd();
   private acceptType: Array<string> = [];
   private ignoreModules: Array<string> = [];
   private packageNodeModules: string[] = [];
