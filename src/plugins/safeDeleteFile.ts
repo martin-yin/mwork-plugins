@@ -4,17 +4,17 @@ import { writeFile } from '../utils';
 import { safeDeleteFileMarkdown } from '../helpers';
 import type { Compiler } from 'webpack';
 import Ignore from 'ignore';
-import { SafeDeleteFileType } from '../types';
+import { ISafeDeleteFile, SafeDeleteFileOptions } from '../types';
 
 const pluginName = 'SafeDeleteFile';
 
-class SafeDeleteFile implements SafeDeleteFileType.ISafeDeleteFile {
+class SafeDeleteFile implements ISafeDeleteFile {
   folderPath: string;
   ignore: any;
   outputType: string;
   files: Array<string>;
 
-  constructor(options: SafeDeleteFileType.options) {
+  constructor(options: SafeDeleteFileOptions) {
     this.folderPath = options?.folderPath || path.join(process.cwd(), '/src');
     this.ignore = Ignore().add(['node_modules', '.git'].concat(options?.ignore || []));
     this.outputType = options?.outputType || 'json';

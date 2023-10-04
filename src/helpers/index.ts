@@ -1,4 +1,5 @@
 import json2md from 'json2md';
+import { ModulesAnalysisMarkdownContentType, ModulesUseInfoType } from '../types';
 
 export function safeDeleteFileMarkdown(content: Array<string>) {
   const markdownContent = content.map(item => {
@@ -8,10 +9,11 @@ export function safeDeleteFileMarkdown(content: Array<string>) {
   return json2md([{ h1: `SafeDeleteFile 扫描结果` }, { blockquote: '以下文件也许可以安全删除' }, ...markdownContent]);
 }
 
-export function modulesAnalysisMarkdown(content: any) {
-  const markdownContent: any = [];
+export function modulesAnalysisMarkdown(content: ModulesUseInfoType) {
+  const markdownContent: ModulesAnalysisMarkdownContentType = [];
+  markdownContent.push({ h1: `ModulesAnalysis 分析结果` });
 
-  content.forEach((item: any) => {
+  content.forEach(item => {
     markdownContent.push({ h2: item.name });
     markdownContent.push({ h3: `使用次数: ${item.total}` });
     item.files.forEach(({ filePath, useType }: any) => {
@@ -20,5 +22,5 @@ export function modulesAnalysisMarkdown(content: any) {
     });
   });
 
-  return json2md([{ h1: `ModulesAnalysis 分析结果` }, ...markdownContent]);
+  return json2md(markdownContent);
 }

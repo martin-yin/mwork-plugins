@@ -3,19 +3,22 @@ import path from 'node:path';
 import { Compiler } from 'webpack';
 import { getCodeByFilePath, getImportsByCode, writeFile } from '../utils';
 import { modulesAnalysisMarkdown } from '../helpers';
-import { ModulesAnalysisType } from '../types';
+import { IModulesAnalysis, ImportsFilesMapType, ModulesAnalysisOptions, ModulesUseInfoType } from '../types';
 
 const pluginName = 'ModulesAnalysis';
 
-class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
+class ModulesAnalysis implements IModulesAnalysis {
   private cwd = process.cwd() + '\\';
   private acceptType: Array<string> = [];
   private ignoreModules: Array<string> = [];
   private packageNodeModules: string[] = [];
   private outputType: 'json' | 'markdown';
 
-  constructor(options: ModulesAnalysisType.options) {
+  constructor(options: ModulesAnalysisOptions) {
     this.acceptType = options?.acceptType || ['vue', 'js', 'jsx', 'tsx', 'ts'];
+    /**
+     * @desc 用于判断哪些 node 包会被忽略。
+     */
     this.ignoreModules = options?.ignoreModules || ['vue', 'vue-router'];
     this.outputType = options?.outputType || 'json';
 
@@ -29,31 +32,20 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
       })
     );
 
-    const packageNodeModules = [...Object.keys(packageJson.dependencies), ...Object.keys(packageJson.devDependencies)];
+    const packageNodeModules = [
+      ...Object.keys(packageJson.peerDependencies),
+      ...Object.keys(packageJson.dependencies),
+      ...Object.keys(packageJson.devDependencies)
+    ];
     return packageNodeModules;
   }
 
-  calculateModuleUseInfo(
-    filesModuleMap: Map<
-      string,
-      Array<{
-        filePath: string;
-        useType: string;
-      }>
-    >
-  ) {
-    const moduleInfo: Array<{
-      name: string;
-      total: number;
-      files: Array<{
-        filePath: string;
-        useType: string;
-      }>;
-    }> = [];
+  calculateModulesUseInfo(filesModuleMap: ImportsFilesMapType): ModulesUseInfoType {
+    const modulesUseInfo: ModulesUseInfoType = [];
 
     filesModuleMap.forEach((value, key) => {
       if (!this.ignoreModules.includes(key) && this.packageNodeModules.includes(key)) {
-        moduleInfo.push({
+        modulesUseInfo.push({
           name: key,
           total: value.length,
           files: value
@@ -61,7 +53,7 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
       }
     });
 
-    return moduleInfo;
+    return modulesUseInfo;
   }
 
   isAcceptFile(file: string) {
@@ -73,13 +65,7 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
   }
 
   async getImportsFilesMap(files: Array<string>) {
-    const importsFilesMap = new Map<
-      string,
-      Array<{
-        filePath: string;
-        useType: string;
-      }>
-    >();
+    const importsFilesMap: ImportsFilesMapType = new Map();
     const importsPromises = files.map(async file => {
       const code = getCodeByFilePath(file);
       const imports = await getImportsByCode(code);
@@ -102,7 +88,7 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
     return importsFilesMap;
   }
 
-  outPutFile(content: any) {
+  outPutFile(content: ModulesUseInfoType) {
     if (this.outputType === 'markdown') {
       writeFile(`./${pluginName}.md`, modulesAnalysisMarkdown(content));
     }
@@ -113,9 +99,9 @@ class ModulesAnalysis implements ModulesAnalysisType.IModulesAnalysis {
     compiler.hooks.done.tap(pluginName, async stats => {
       const filesPath = [...stats.compilation.fileDependencies].filter(filePath => this.isAcceptFile(filePath));
       const filesModuleMap = await this.getImportsFilesMap(filesPath);
-      const result = this.calculateModuleUseInfo(filesModuleMap);
+      const modulesUseInfo = this.calculateModulesUseInfo(filesModuleMap);
 
-      this.outPutFile(result);
+      this.outPutFile(modulesUseInfo);
     });
   }
 }
