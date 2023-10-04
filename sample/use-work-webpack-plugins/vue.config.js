@@ -5,11 +5,6 @@ module.exports = defineConfig({
   transpileDependencies: true,
 
   configureWebpack: {
-    plugins: [
-      new SafeDeleteFile(),
-      new ModulesAnalysis({
-        outputType: 'markdown'
-      })
-    ]
+    plugins: [new SafeDeleteFile(), new ModulesAnalysis()]
   }
 });
