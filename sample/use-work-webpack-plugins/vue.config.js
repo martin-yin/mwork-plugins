@@ -1,10 +1,15 @@
-const { defineConfig } = require('@vue/cli-service')
+const { defineConfig } = require('@vue/cli-service');
 
-const { SafeDeleteFile } = require("work-webpack")
+const { SafeDeleteFile, ModulesAnalysis } = require('work-webpack');
 module.exports = defineConfig({
   transpileDependencies: true,
 
   configureWebpack: {
-    plugins: [new SafeDeleteFile()]
+    plugins: [
+      new SafeDeleteFile(),
+      new ModulesAnalysis({
+        outputType: 'markdown'
+      })
+    ]
   }
-})
+});
