@@ -2,11 +2,13 @@ import { LoaderContext } from 'webpack';
 import { parse, compileTemplate } from '@vue/compiler-sfc';
 
 /**
- * @description 为 vue template 中的 click 方法增加日志。
+ * @description 为 vue template 组件增加 log。
+ * 1. click 事件增加 log，方便开发者查询 click 来源。
+ * 2. emit 事件增加 log，方便开发者查询到 emit 触发链。
  * @param this
  * @param source
  */
-export default function vueTemplateClickLog(this: LoaderContext<any>, source: string) {
+export default function vueTemplatekLog(this: LoaderContext<any>, source: string) {
   const loaderContext = this;
   const { resourcePath } = loaderContext;
 
