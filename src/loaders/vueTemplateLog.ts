@@ -1,6 +1,11 @@
 import { LoaderContext } from 'webpack';
 import { parse, compileTemplate } from '@vue/compiler-sfc';
-
+import { getVueTempllateEvents, replaceScriptCode } from '../utils';
+const parser = require('@babel/parser');
+const traverse = require('@babel/traverse').default;
+const generate = require('@babel/generator').default;
+const template = require('@babel/template').default;
+const t = require('@babel/types');
 /**
  * @description 为 vue template 组件增加 log。
  * 1. click 事件增加 log，方便开发者查询 click 来源。
@@ -8,18 +13,63 @@ import { parse, compileTemplate } from '@vue/compiler-sfc';
  * @param this
  * @param source
  */
-export default function vueTemplatekLog(this: LoaderContext<any>, source: string) {
+export default function VueTemplateLog(this: LoaderContext<any>, source: string) {
   const loaderContext = this;
   const { resourcePath } = loaderContext;
 
   const vueCodeAst = parse(source);
+  const scriptCode = vueCodeAst.descriptor.script?.content;
+
+  if (!scriptCode) {
+    return source;
+  }
+
   const templateAst = compileTemplate({
     ...vueCodeAst.descriptor,
     id: resourcePath
   });
 
-  // 遍历 templateAst 查询出该 template 中所有的 click 事件名称。
+  const events = getVueTempllateEvents(templateAst);
+  const scriptAst = parser.parse(scriptCode, {
+    sourceType: 'unambiguous'
+  });
 
-  // 在 script 部分中找到对应的 methdos，并在函数之前添加 console.log。
-  return source;
+  traverse(scriptAst, {
+    BlockStatement(path) {
+      if (path.isAddLog) {
+        return;
+      }
+      const parentPath = path?.parentPath;
+      const methdoName = parentPath?.node?.key?.name;
+
+      if (methdoName !== '' && events.includes(methdoName)) {
+        let methodContainsEmit = false;
+        path.traverse({
+          MemberExpression(innerPath) {
+            if (
+              t.isThisExpression(innerPath.node.object) &&
+              t.isIdentifier(innerPath.node.property) &&
+              innerPath?.node?.property?.name === '$emit'
+            ) {
+              methodContainsEmit = true;
+            }
+          }
+        });
+
+        const newTemplate = template.ast(`
+          console.log("方法名称: ${methdoName}");
+          console.log("文件位置: ${resourcePath}");
+          console.log("是否触发emit: ${methodContainsEmit ? '是' : '否'}");
+        `);
+
+        path.unshiftContainer('body', newTemplate);
+        path.isAddLog = true;
+      }
+    }
+  });
+
+  const { code } = generate(scriptAst);
+  const withLogSource = replaceScriptCode(source, code);
+
+  return withLogSource;
 }

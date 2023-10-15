@@ -1,4 +1,5 @@
 const vueCompiler = require('@vue/compiler-dom');
+import type { SFCTemplateCompileResults } from '@vue/compiler-sfc';
 import fs from 'node:fs';
 
 type element = {
@@ -63,4 +64,51 @@ function getCodeByFilePath(filePath: string) {
   return codeMethodsProxy[extensions](filePath);
 }
 
-export { getCodeByFilePath };
+function recursiveTemplateProps(array: any, events: Array<string> = []) {
+  if (Array.isArray(array)) {
+    array.forEach(item => {
+      if (item.children) {
+        recursiveTemplateProps(item.children, events);
+      }
+      if (item.props) {
+        // 对 props 数组进行操作
+        item.props.forEach((prop: any) => {
+          if (prop.type === 7 && prop.arg.content === 'click') {
+            let eventName = '';
+            if (prop.exp?.children) {
+              eventName = prop.exp?.children[0]?.loc?.source;
+            }
+            events.push(eventName);
+          }
+        });
+      }
+    });
+  }
+}
+
+function getVueTempllateEvents(templateAst: SFCTemplateCompileResults) {
+  const events: Array<string> = [];
+  recursiveTemplateProps(templateAst.ast?.children, events);
+  return events;
+}
+
+function replaceScriptCode(content: string, replaceContent: string) {
+  let regex = /<script\b([^>]*)>([\s\S]*?)<\/script>/;
+  let matches = content.match(regex);
+
+  if (matches) {
+    let scriptTag = matches[0];
+    let attributes = matches[1];
+    let originalContent = matches[2];
+
+    // 构建新的 <script> 标签，保留原有的属性和其他内容
+    let newScriptTag = `<script${attributes}>${originalContent.replace(originalContent, replaceContent)}</script>`;
+
+    // 替换原有的 <script> 标签为新的标签
+    content = content.replace(scriptTag, newScriptTag);
+  }
+
+  return content;
+}
+
+export { getCodeByFilePath, getVueTempllateEvents, replaceScriptCode };
