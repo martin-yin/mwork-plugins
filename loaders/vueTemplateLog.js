@@ -31787,6 +31787,8 @@ function recursiveTemplateProps(array, events = []) {
             let eventName = "";
             if (prop.exp?.children) {
               eventName = prop.exp?.children[0]?.loc?.source;
+            } else {
+              eventName = prop?.exp?.loc?.source;
             }
             events.push(eventName);
           }
