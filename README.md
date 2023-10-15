@@ -2,6 +2,28 @@
 
 工作中开发的 webpack plugins or loader
 
+## loader
+
+### VueTemplateLog
+
+给 `template` 模版预发中 `click` 方法增加 `log`。（目前有性能问题，且不支持 `vue3` ）
+
+在一个比较庞大的项目中想要找出相应的代码比较耗时，可以使用该`loader`。
+
+```ts
+module.exports = defineConfig({
+  transpileDependencies: true,
+
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .test(/\.vue$/)
+      .use('vue-template-log')
+      .loader('work-webpack/dist/vueTemplateLog');
+  }
+});
+```
+
 ## plugins
 
 ### ModulesAnalysis
