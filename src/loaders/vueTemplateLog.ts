@@ -35,7 +35,7 @@ export default function VueTemplateLog(this: LoaderContext<any>, source: string)
   });
 
   traverse(scriptAst, {
-    BlockStatement(path) {
+    BlockStatement(path: any) {
       if (path.isAddLog) {
         return;
       }
@@ -45,7 +45,7 @@ export default function VueTemplateLog(this: LoaderContext<any>, source: string)
       if (methdoName !== '' && events.includes(methdoName)) {
         let methodContainsEmit = false;
         path.traverse({
-          MemberExpression(innerPath) {
+          MemberExpression(innerPath: any) {
             if (
               t.isThisExpression(innerPath.node.object) &&
               t.isIdentifier(innerPath.node.property) &&

@@ -1,15 +1,16 @@
 const { defineConfig } = require('@vue/cli-service');
-
-// const VueTemplateLog = require('work-webpack/loaders/vueTemplateLog');
+const { SafeDeleteFile, ModulesAnalysis } = require('work-webpack');
 
 module.exports = defineConfig({
   transpileDependencies: true,
-
+  configureWebpack: {
+    plugins: [new SafeDeleteFile(), new ModulesAnalysis()]
+  },
   chainWebpack: config => {
     config.module
       .rule('vue')
       .test(/\.vue$/)
       .use('vue-template-log')
-      .loader('work-webpack/loaders/vueTemplateLog');
+      .loader('work-webpack/dist/vueTemplateLog');
   }
 });

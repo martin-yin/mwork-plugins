@@ -5,19 +5,15 @@ const baseConfig = {
   treeshake: true,
   dts: true
 };
-
 export default defineConfig([
   {
-    entry: ['src/plugins/index.ts'],
-    outDir: 'plugins',
+    entry: ['src/index.ts'],
     format: ['cjs'],
     ...baseConfig
   },
   {
     entry: ['src/loaders/vueTemplateLog.ts'],
-    outDir: 'loaders',
     format: ['cjs'],
-    ...baseConfig,
-    dts: false
+    ...baseConfig
   }
 ]);
