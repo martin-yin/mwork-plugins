@@ -10,6 +10,12 @@
 
 在一个比较庞大的项目中想要找出相应的代码比较耗时，可以使用该`loader`。
 
+### Loader 使用案例
+
+#### vueTemplateLog
+
+该 `loader` 会动态生成 `log`。
+
 ```ts
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -23,6 +29,8 @@ module.exports = defineConfig({
   }
 });
 ```
+
+![vueTemplateLog](./image/vueTemplateLog.png)
 
 ## plugins
 
@@ -54,7 +62,9 @@ module.exports = defineConfig({
 |   **`ignore`**   | `{String}` `{Array}` | 需要被忽略文件夹或文件           | 默认值: []                   |
 | **`outputType`** |      `{String}`      | 输出方式, 支持 `json` `markdown` | 默认值: `'json'`             |
 
-## SafeDeleteFile ModulesAnalysis 使用案例
+### Plugins 使用案例
+
+### SafeDeleteFile ModulesAnalysis
 
 ```
 cd sample/use-work-webpack-plugins
@@ -65,9 +75,8 @@ npm i && npm run build
 
 构建后会生成 `modulesAnalysis.json` 和 `safeDeleteFile.json` 两个文件
 
-### safeDeleteFile.json
-
 ```js
+// safeDeleteFile.json
 [
   '/src/assets/aleksandr-popov-Hkrp734cElQ-unsplash.jpg',
   '/src/assets/devon-hawkins-YW_xD_j50UI-unsplash.jpg',
@@ -77,12 +86,11 @@ npm i && npm run build
 ];
 ```
 
-### modulesAnalysis.json
-
 ```js
+// modulesAnalysis.json
 [
-  { name: 'axios', total: 1, files: [{ filePath: '/src/components/HelloWorld.vue', useType: 'import' }] },
+  ({ name: 'axios', total: 1, files: [{ filePath: '/src/components/HelloWorld.vue', useType: 'import' }] },
   { name: 'dayjs', total: 1, files: [{ filePath: '/src/components/HelloWorld.vue', useType: 'require' }] },
-  { name: 'ant-design-vue', total: 1, files: [{ filePath: '/src/main.js', useType: 'require' }] }
+  { name: 'ant-design-vue', total: 1, files: [{ filePath: '/src/main.js', useType: 'require' }] })
 ];
 ```

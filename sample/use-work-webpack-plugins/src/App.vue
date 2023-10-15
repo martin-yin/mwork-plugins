@@ -2,16 +2,19 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" @click="test()" />
     <HelloWorld msg="Welcome to Your Vue.js App" @click="bbb" />
+    <CustomModal />
   </div>
 </template>
 
 <script lang="ts">
 import HelloWorld from './components/HelloWorld.vue';
+import CustomModal from './components/CustomModal.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HelloWorld,
+    CustomModal
   },
   methods: {
     test() {
