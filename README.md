@@ -8,7 +8,7 @@
 
 给 `template` 模版预发中 `click` 方法增加 `log`。（目前有性能问题，且不支持 `vue3` ）
 
-在一个比较庞大的项目中想要找出相应的代码比较耗时，可以使用该`loader`。
+在一个比较庞大的项目中想要找出相应的代码比较费劲的时候可以考虑使用该 `loader`。
 
 ```ts
 module.exports = defineConfig({
