@@ -3,7 +3,7 @@ import { ModulesAnalysisMarkdownContentType, ModulesUseInfoType } from '../types
 import type { SFCTemplateCompileResults } from '@vue/compiler-sfc';
 // 这里不使用 require 方式引入会报错，后期处理！
 import template from '@babel/template';
-import traverse, { NodePath } from '@babel/traverse';
+import traverse from '@babel/traverse';
 import { ParseResult } from '@babel/core';
 import * as babelTypes from '@babel/types';
 
@@ -34,25 +34,25 @@ export function modulesAnalysisMarkdown(content: ModulesUseInfoType) {
 /**
  * @description 递归获取 template 中的 click 事件。
  * @param array
- * @param events
+ * @param templateEvents
  */
-export function recursiveTemplateProps(array: any, events: Array<string> = []) {
+export function recursiveTemplateProps(array: any, events: Array<string>, templateEvents: Array<string> = []) {
   if (Array.isArray(array)) {
     array.forEach(item => {
       if (item.children) {
-        recursiveTemplateProps(item.children, events);
+        recursiveTemplateProps(item.children, events, templateEvents);
       }
       if (item.props) {
         // 对 props 数组进行操作
         item.props.forEach((prop: any) => {
-          if (prop.type === 7 && prop?.arg?.content === 'click') {
-            let eventName = '';
+          if (prop.type === 7 && prop?.arg?.content && events.includes(prop.arg.content)) {
+            let templateEvent = '';
             if (prop.exp?.children) {
-              eventName = prop.exp?.children[0]?.loc?.source;
+              templateEvent = prop.exp?.children[0]?.loc?.source;
             } else {
-              eventName = prop?.exp?.loc?.source;
+              templateEvent = prop?.exp?.loc?.source;
             }
-            events.push(eventName);
+            templateEvents.push(templateEvent);
           }
         });
       }
@@ -65,10 +65,10 @@ export function recursiveTemplateProps(array: any, events: Array<string> = []) {
  * @param templateAst
  * @returns
  */
-export function getVueTempllateEvents(templateAst: SFCTemplateCompileResults) {
-  const events: Array<string> = [];
-  recursiveTemplateProps(templateAst.ast?.children, events);
-  return events;
+export function getVueTempllateEvents(templateAst: SFCTemplateCompileResults, events: Array<string>) {
+  const templateEvents: Array<string> = [];
+  recursiveTemplateProps(templateAst.ast?.children, events, templateEvents);
+  return templateEvents;
 }
 
 /**

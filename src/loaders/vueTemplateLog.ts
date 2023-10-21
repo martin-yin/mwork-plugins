@@ -5,13 +5,26 @@ import { parse } from '@babel/core';
 import generate from '@babel/generator';
 /**
  * @description 为 vue template 组件增加 log。
- * 1. click 事件增加 log，方便开发者查询 click 来源。
- * 2. emit 事件增加 log，方便开发者查询到 emit 触发链。
  * @param this
  * @param source
  */
-export default function VueTemplateLog(this: LoaderContext<any>, source: string) {
+type VueTemplateLogOptions = {
+  enable: boolean;
+  events: Array<string>;
+};
+
+export default function VueTemplateLog(this: LoaderContext<VueTemplateLogOptions>, source: string) {
   const loaderContext = this;
+  const loaderOptions = this.getOptions();
+
+  if (!loaderOptions.enable) {
+    return source;
+  }
+
+  if (!Array.isArray(loaderOptions.events)) {
+    return source;
+  }
+
   const { resourcePath } = loaderContext;
 
   const vueCodeAst = sfcParse(source);
@@ -26,8 +39,13 @@ export default function VueTemplateLog(this: LoaderContext<any>, source: string)
     id: resourcePath
   });
 
-  const events = getVueTempllateEvents(templateAst);
-  if (!events.length) {
+  if (!templateAst.errors.length) {
+    return source;
+  }
+
+  const templateEvents = getVueTempllateEvents(templateAst, loaderOptions.events);
+
+  if (!templateEvents.length) {
     return source;
   }
 
@@ -35,11 +53,12 @@ export default function VueTemplateLog(this: LoaderContext<any>, source: string)
     ast: true,
     filename: `${Date.now()}.ts`
   });
+
   if (!scriptAst) {
     return source;
   }
   // 改方法处理清洗后会给相应的 click 事件增加 log
-  const withLogScriptAst = traverseVueScriptAst(scriptAst, events, resourcePath);
+  const withLogScriptAst = traverseVueScriptAst(scriptAst, templateEvents, resourcePath);
   const { code } = generate(withLogScriptAst);
   const withLogSource = replaceScriptCode(source, code);
 

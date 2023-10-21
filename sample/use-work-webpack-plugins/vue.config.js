@@ -11,6 +11,9 @@ module.exports = defineConfig({
       .rule('vue')
       .test(/\.vue$/)
       .use('vue-template-log')
-      .loader('work-webpack/dist/vueTemplateLog');
+      .loader('work-webpack/dist/vueTemplateLog').options({
+        events: ['cancel', 'ok', 'click'],
+        enable: true,
+      }).end();
   }
 });
