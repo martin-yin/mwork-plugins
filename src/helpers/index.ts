@@ -44,7 +44,7 @@ export function recursiveTemplateProps(array: any, events: Array<string> = []) {
       if (item.props) {
         // 对 props 数组进行操作
         item.props.forEach((prop: any) => {
-          if (prop.type === 7 && prop.arg.content === 'click') {
+          if (prop.type === 7 && prop?.arg?.content === 'click') {
             let eventName = '';
             if (prop.exp?.children) {
               eventName = prop.exp?.children[0]?.loc?.source;

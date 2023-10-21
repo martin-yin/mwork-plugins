@@ -15,7 +15,7 @@ export default function VueTemplateLog(this: LoaderContext<any>, source: string)
   const { resourcePath } = loaderContext;
 
   const vueCodeAst = parse(source);
-  const scriptCode = vueCodeAst.descriptor.script?.content;
+  const scriptCode = vueCodeAst.descriptor?.script?.content;
 
   if (!scriptCode) {
     return source;
@@ -32,7 +32,8 @@ export default function VueTemplateLog(this: LoaderContext<any>, source: string)
   }
 
   const scriptAst = parser.parse(scriptCode, {
-    sourceType: 'unambiguous'
+    sourceType: 'unambiguous',
+    plugins: ['jsx', 'flow']
   });
   // 改方法处理清洗后会给相应的 click 事件增加 log
   const withLogScriptAst = traverseVueScriptAst(scriptAst, events, resourcePath);
