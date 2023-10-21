@@ -17,6 +17,7 @@ class SafeDeleteFile implements ISafeDeleteFile {
   private files: Array<string>;
 
   constructor(options: SafeDeleteFileOptions) {
+    this.enable = options.enable;
     this.folderPath = options?.folderPath || path.join(process.cwd(), '/src');
     this.ignore = Ignore().add(['node_modules', '.git'].concat(options?.ignore || []));
     this.outputType = options?.outputType || 'json';
