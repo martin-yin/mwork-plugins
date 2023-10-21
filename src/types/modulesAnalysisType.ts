@@ -39,6 +39,7 @@ export abstract class IModulesAnalysis {
  * @desc 初始化参数
  */
 export type ModulesAnalysisOptions = {
+  enable: boolean;
   acceptType: Array<string>;
   ignoreModules: Array<string>;
   outputType: 'json' | 'markdown';

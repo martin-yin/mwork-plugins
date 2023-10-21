@@ -9,14 +9,14 @@ import { writeFile } from '../utils';
 const pluginName = 'SafeDeleteFile';
 
 class SafeDeleteFile implements ISafeDeleteFile {
-  folderPath: string;
-  ignore: any;
-  outputType: string;
-  files: Array<string>;
-  cwd: string;
+  private enable: boolean = false;
+  private cwd = process.cwd();
+  private folderPath: string;
+  private ignore: any;
+  private outputType: string;
+  private files: Array<string>;
 
   constructor(options: SafeDeleteFileOptions) {
-    this.cwd = process.cwd();
     this.folderPath = options?.folderPath || path.join(process.cwd(), '/src');
     this.ignore = Ignore().add(['node_modules', '.git'].concat(options?.ignore || []));
     this.outputType = options?.outputType || 'json';
@@ -74,6 +74,9 @@ class SafeDeleteFile implements ISafeDeleteFile {
   }
 
   apply(compiler: Compiler) {
+    if (!this.enable) {
+      return;
+    }
     compiler.hooks.done.tap(pluginName, stats => {
       const result = this.getDifferenceFiles([...stats.compilation.fileDependencies]);
       this.outPutFile(result);

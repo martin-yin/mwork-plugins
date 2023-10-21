@@ -8,6 +8,7 @@ import { getCodeByFilePath, getImportsByCode, writeFile } from '../utils';
 const pluginName = 'ModulesAnalysis';
 
 class ModulesAnalysis implements IModulesAnalysis {
+  private enable: boolean = false;
   private cwd = process.cwd();
   private acceptType: Array<string> = [];
   private ignoreModules: Array<string> = [];
@@ -15,6 +16,7 @@ class ModulesAnalysis implements IModulesAnalysis {
   private outputType: 'json' | 'markdown';
 
   constructor(options: ModulesAnalysisOptions) {
+    this.enable = options.enable;
     this.acceptType = options?.acceptType || ['vue', 'js', 'jsx', 'tsx', 'ts'];
     /**
      * @desc 用于判断哪些 node 包会被忽略。
@@ -27,7 +29,7 @@ class ModulesAnalysis implements IModulesAnalysis {
 
   getPackageNodeModules() {
     const packageJson = JSON.parse(
-      fs.readFileSync(path.join(process.cwd(), './package.json'), {
+      fs.readFileSync(path.join(this.cwd, './package.json'), {
         encoding: 'utf-8'
       })
     );
@@ -97,6 +99,9 @@ class ModulesAnalysis implements IModulesAnalysis {
   }
 
   apply(compiler: Compiler) {
+    if (!this.enable) {
+      return;
+    }
     compiler.hooks.done.tap(pluginName, async stats => {
       const filesPath = [...stats.compilation.fileDependencies].filter(filePath => this.isAcceptFile(filePath));
       const filesModuleMap = await this.getImportsFilesMap(filesPath);

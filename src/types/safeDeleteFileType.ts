@@ -24,6 +24,7 @@ export abstract class ISafeDeleteFile {
 }
 
 export type SafeDeleteFileOptions = {
+  enable: boolean;
   folderPath: string;
   ignore: string;
   outputType: string;
