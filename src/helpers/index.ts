@@ -2,11 +2,12 @@ import json2md from 'json2md';
 import { ModulesAnalysisMarkdownContentType, ModulesUseInfoType } from '../types';
 import type { SFCTemplateCompileResults } from '@vue/compiler-sfc';
 // 这里不使用 require 方式引入会报错，后期处理！
-const template = require('@babel/template').default;
-const traverse = require('@babel/traverse').default;
-const t = require('@babel/types');
+import template from '@babel/template';
+import traverse, { NodePath } from '@babel/traverse';
+import { ParseResult } from '@babel/core';
+import * as babelTypes from '@babel/types';
 
-export function safeDeleteFileMarkdown(content: Array<string>) {
+export function safeDeleteFileMarkdown(content: Array<string>): string {
   const markdownContent = content.map(item => {
     return { p: `${item}` };
   });
@@ -77,33 +78,40 @@ export function getVueTempllateEvents(templateAst: SFCTemplateCompileResults) {
  * @param resourcePath
  * @returns
  */
-export function traverseVueScriptAst(scriptAst: any, events: Array<string>, resourcePath: string) {
+export function traverseVueScriptAst(scriptAst: ParseResult, events: Array<string>, resourcePath: string) {
   traverse(scriptAst, {
     BlockStatement(path: any) {
-      if (path.isAddLog) {
+      if (path?.isAddLog) {
         return;
       }
       const parentPath = path?.parentPath;
-      const methdoName = parentPath?.node?.key?.name;
+      // 判断是不是方法
+      if (!babelTypes.isMethod(parentPath?.node)) {
+        return;
+      }
 
+      const methdoName = parentPath?.node?.key?.name;
       if (methdoName !== '' && events.includes(methdoName)) {
         let methodContainsEmit = false;
         path.traverse({
           MemberExpression(innerPath: any) {
             if (
-              t.isThisExpression(innerPath.node.object) &&
-              t.isIdentifier(innerPath.node.property) &&
+              babelTypes.isThisExpression(innerPath.node.object) &&
+              babelTypes.isIdentifier(innerPath.node.property) &&
               innerPath?.node?.property?.name === '$emit'
             ) {
               methodContainsEmit = true;
             }
           }
         });
-
+        const filePath = resourcePath;
+        const escapedFilePath = JSON.stringify(filePath);
         const newTemplate = template.ast(`
-          console.log("方法名称: ${methdoName}");
-          console.log("文件位置: ${resourcePath}");
-          console.log("是否触发emit: ${methodContainsEmit ? '是' : '否'}");
+          console.log('------vueTemplateLog------')
+          console.log('方法名称: ${methdoName}');
+          console.log('文件位置: ${escapedFilePath}');
+          console.log('是否触发emit: ${methodContainsEmit ? '是' : '否'}');
+          console.log('------vueTemplateLog------')
         `);
 
         path.unshiftContainer('body', newTemplate);
