@@ -4,7 +4,13 @@ const { SafeDeleteFile, ModulesAnalysis } = require('work-webpack');
 module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
-    plugins: [new SafeDeleteFile(), new ModulesAnalysis()]
+    plugins: [
+      new SafeDeleteFile({
+        enable: true,
+      }),
+      new ModulesAnalysis({
+        enable: true,
+      })]
   },
   chainWebpack: config => {
     config.module
@@ -13,7 +19,7 @@ module.exports = defineConfig({
       .use('vue-template-log')
       .loader('work-webpack/dist/vueTemplateLog').options({
         events: ['cancel', 'ok', 'click'],
-        enable: true,
+        enable: false,
       }).end();
   }
 });
