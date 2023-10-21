@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Compiler } from 'webpack';
-import { getCodeByFilePath, getImportsByCode, writeFile } from '../utils';
 import { modulesAnalysisMarkdown } from '../helpers';
 import { IModulesAnalysis, ImportsFilesMapType, ModulesAnalysisOptions, ModulesUseInfoType } from '../types';
+import { getCodeByFilePath, getImportsByCode, writeFile } from '../utils';
 
 const pluginName = 'ModulesAnalysis';
 

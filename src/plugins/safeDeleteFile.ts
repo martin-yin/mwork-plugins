@@ -1,10 +1,10 @@
+import Ignore from 'ignore';
 import fs from 'node:fs';
 import path from 'node:path';
-import { writeFile } from '../utils';
-import { safeDeleteFileMarkdown } from '../helpers';
 import type { Compiler } from 'webpack';
-import Ignore from 'ignore';
+import { safeDeleteFileMarkdown } from '../helpers';
 import { ISafeDeleteFile, SafeDeleteFileOptions } from '../types';
+import { writeFile } from '../utils';
 
 const pluginName = 'SafeDeleteFile';
 
