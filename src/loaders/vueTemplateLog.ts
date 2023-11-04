@@ -21,12 +21,16 @@ export default function VueTemplateLog(this: LoaderContext<VueTemplateLogOptions
     return source;
   }
 
-  const { resourcePath } = loaderContext;
+  const { resourcePath, resourceQuery } = loaderContext;
+
+  // 解析出不是 template、script 的话就直接返回源码。
+  if (!resourceQuery.length && !['?vue&type=template', '?vue&type=script'].find(item => resourceQuery.includes(item))) {
+    return source;
+  }
 
   const vueCodeAst = sfcParse(source);
-  const scriptCode = vueCodeAst.descriptor.script?.content;
 
-  if (!scriptCode) {
+  if (vueCodeAst.errors.length) {
     return source;
   }
 
@@ -42,6 +46,12 @@ export default function VueTemplateLog(this: LoaderContext<VueTemplateLogOptions
   const templateEvents = getVueTempllateEvents(templateAst, loaderOptions.events);
 
   if (!templateEvents.length) {
+    return source;
+  }
+
+  const scriptCode = vueCodeAst.descriptor.script?.content;
+
+  if (!scriptCode) {
     return source;
   }
 

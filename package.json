@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/martin-yin/work-webpack#readme",
   "dependencies": {
-    "@babel/types": "^7.23.0",
     "@swc/core": "^1.3.90",
     "@types/babel__generator": "^7.6.5",
     "@types/babel__template": "^7.4.2",
@@ -34,6 +33,9 @@
     "@babel/parser": "^7.23.0",
     "@babel/template": "^7.22.15",
     "@babel/traverse": "^7.23.2",
+    "@types/babel__core": "^7.20.3",
+    "@babel/preset-typescript": "^7.23.2",
+    "@babel/types": "^7.23.0",
     "@types/json2md": "^1.5.2",
     "@types/node": "^20.8.0",
     "eslint": "^8.50.0",
