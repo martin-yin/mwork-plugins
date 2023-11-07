@@ -26,8 +26,8 @@ export default function VueTemplateLog(this: LoaderContext<VueTemplateLogOptions
 
   const { resourcePath, resourceQuery } = loaderContext;
 
-  // 解析出不是 template、script 的话就直接返回源码。
-  if (!resourceQuery.length && !['?vue&type=template', '?vue&type=script'].find(item => resourceQuery.includes(item))) {
+  // 解析出不是 script 的话就直接返回源码。
+  if (!resourceQuery.length && resourceQuery.includes('?vue&type=script')) {
     return source;
   }
 
