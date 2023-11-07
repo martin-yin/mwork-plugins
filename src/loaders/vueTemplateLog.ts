@@ -1,5 +1,6 @@
 import { parse } from '@babel/core';
 import generate from '@babel/generator';
+import loaderUtils from 'loader-utils';
 import { compileTemplate, parse as sfcParse } from '@vue/compiler-sfc';
 import { LoaderContext } from 'webpack';
 import { getVueTempllateEvents, replaceScriptCode, traverseVueScriptAst } from '../helpers';
@@ -11,7 +12,9 @@ import { VueTemplateLogOptions } from '../types/vueTemplateLog';
  */
 export default function VueTemplateLog(this: LoaderContext<VueTemplateLogOptions>, source: string) {
   const loaderContext = this;
-  const loaderOptions = this.getOptions();
+  const loaderOptions = this?.getOptions
+    ? this.getOptions()
+    : (loaderUtils.getOptions(this) as unknown as VueTemplateLogOptions);
 
   if (!loaderOptions.enable) {
     return source;
