@@ -10,8 +10,11 @@ import { VueTemplateEvents, VueTemplateEvent } from '../../types/vueTemplateLog'
  * @param templateAst
  * @returns
  */
-export function getVueTempllateEvents(templateAst: SFCTemplateCompileResults, events: Array<string>) {
+export function getVueTempllateEvents(templateAst: SFCTemplateCompileResults | null, events: Array<string>) {
   const vueTemplateEvents: VueTemplateEvents = [];
+  if (!templateAst) {
+    return vueTemplateEvents;
+  }
   recursiveTemplateProps(templateAst.ast?.children, events, vueTemplateEvents);
   return vueTemplateEvents;
 }
