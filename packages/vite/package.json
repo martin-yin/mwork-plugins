@@ -1,12 +1,15 @@
 {
   "name": "@mwork-plugins/vite",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo @mwork-plugins/vite"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "vite": "^5.0.0"
+  }
 }

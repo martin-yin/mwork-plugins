@@ -29,7 +29,8 @@ export function getVueScriptCode(path: string) {
 
   // 使用 vue sfc 获取到 script
   const vueCodeAst = sfcParse(code);
-  const vueScript = vueCodeAst.descriptor.script;
+
+  const vueScript = vueCodeAst.descriptor.script || vueCodeAst.descriptor.scriptSetup;
 
   if (vueCodeAst.errors.length) {
     return '';

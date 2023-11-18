@@ -85,6 +85,7 @@ export function traverseVueScriptAst(
   vueTemplateEvents: VueTemplateEvents,
   resourcePath: string
 ): ParseResult {
+  debugger;
   traverse(scriptAst, {
     BlockStatement(path: any) {
       if (path?.isAddLog) {
@@ -95,13 +96,10 @@ export function traverseVueScriptAst(
       if (!babelTypes.isMethod(parentPath?.node)) {
         return;
       }
-
       const method = parentPath?.node?.key?.name;
-
       if (method === '') {
         return;
       }
-
       const templateEvent = getTemplateEventByMethod(method, vueTemplateEvents);
       if (templateEvent) {
         let methodContainsEmit = false;
@@ -126,9 +124,62 @@ export function traverseVueScriptAst(
             console.log('是否触发emit: ${methodContainsEmit ? '是' : '否'}');
             console.log('------vueTemplateLog------')
           `);
-
+    
         path.unshiftContainer('body', newTemplate);
         path.isAddLog = true;
+      }
+    },
+    ArrowFunctionExpression(path: any) {
+      const parent = path.parent as any;
+      const { name } = parent?.id;
+      const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
+      if (templateEvent) {
+        path.traverse({
+          BlockStatement(block: any) {
+            if (block?.isAddLog) {
+              return;
+            }
+            const filePath = resourcePath;
+            const escapedFilePath = JSON.stringify(filePath);
+            const newTemplate = template.ast(`
+              console.log('------vueTemplateLog------')
+              console.log('事件名称: ${templateEvent.event}');
+              console.log('方法名称: ${name}');
+              console.log('文件位置: ${escapedFilePath}');
+              console.log('是否触发emit: ${false ? '是' : '否'}');
+              console.log('------vueTemplateLog------')
+            `);
+
+            block.unshiftContainer('body', newTemplate);
+            block.isAddLog = true;
+          }
+        });
+      }
+    },
+    FunctionDeclaration(path) {
+      const name = path.node?.id?.name || '';
+      const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
+      if (templateEvent) {
+        path.traverse({
+          BlockStatement(block: any) {
+            if (block?.isAddLog) {
+              return;
+            }
+            const filePath = resourcePath;
+            const escapedFilePath = JSON.stringify(filePath);
+            const newTemplate = template.ast(`
+              console.log('------vueTemplateLog------')
+              console.log('事件名称: ${templateEvent.event}');
+              console.log('方法名称: ${name}');
+              console.log('文件位置: ${escapedFilePath}');
+              console.log('是否触发emit: ${false ? '是' : '否'}');
+              console.log('------vueTemplateLog------')
+            `);
+
+            block.unshiftContainer('body', newTemplate);
+            block.isAddLog = true;
+          }
+        });
       }
     }
   });
@@ -187,7 +238,7 @@ export function addTemplateEventLog(source: string, resourcePath: string, events
     return source;
   }
 
-  const scriptCode = vueCodeAst.descriptor.script?.content;
+  const scriptCode = vueCodeAst.descriptor.script?.content || vueCodeAst.descriptor.scriptSetup?.content;
 
   if (!scriptCode) {
     return source;
