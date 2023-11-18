@@ -1,0 +1,24 @@
+{
+  "name": "@mwork-plugins/webpack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@mwork-plugins/helpers": "workspace:^",
+    "@mwork-plugins/types": "workspace:^",
+    "@mwork-plugins/utils": "workspace:^",
+    "@swc/core": "^1.3.90",
+    "@vue/compiler-dom": "^3.3.8",
+    "webpack": "^5.89.0"
+  }
+}

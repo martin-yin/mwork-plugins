@@ -1,0 +1,13 @@
+{
+  "name": "@mwork-plugins/types",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "types": "./dist",
+  "scripts": {
+    "build": "tsup src/index.ts --dts-only "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@mwork-plugins/helpers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@mwork-plugins/types": "workspace:^",
+    "@mwork-plugins/utils": "workspace:^"
+  }
+}
