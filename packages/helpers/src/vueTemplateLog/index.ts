@@ -1,7 +1,7 @@
 import { parse, ParseResult } from '@babel/core';
 import generate from '@babel/generator';
 import template from '@babel/template';
-import traverse from '@babel/traverse';
+import traverse, { NodePath } from '@babel/traverse';
 import * as babelTypes from '@babel/types';
 import { VueTemplateEvent, VueTemplateEvents } from '@mwork-plugins/types';
 import type { SFCTemplateCompileResults } from '@vue/compiler-sfc';
@@ -74,7 +74,29 @@ export function getTemplateEventByMethod(method: string, vueTemplateEvents: VueT
 }
 
 /**
- * @description 递归处理 ast，并给其添加 log。
+ * @desc 添加 log ast
+ * @param path
+ * @param method
+ * @param resourcePath
+ * @param templateEvent
+ */
+function addLogAst(path: any, method: string, resourcePath: string, templateEvent: VueTemplateEvent) {
+  const filePath = resourcePath;
+  const escapedFilePath = JSON.stringify(filePath);
+  const newTemplate = template.ast(`
+      console.log('------vueTemplateLog------')
+      console.log('事件名称: ${templateEvent.event}');
+      console.log('方法名称: ${method}');
+      console.log('文件位置: ${escapedFilePath}');
+      console.log('------vueTemplateLog------')
+    `);
+
+  path.unshiftContainer('body', newTemplate);
+  path.isAddLog = true;
+}
+
+/**
+ * @desc 递归处理 ast，并给其添加 log。
  * @param scriptAst
  * @param vueTemplateEvents
  * @param resourcePath
@@ -85,73 +107,46 @@ export function traverseVueScriptAst(
   vueTemplateEvents: VueTemplateEvents,
   resourcePath: string
 ): ParseResult {
-  debugger;
   traverse(scriptAst, {
-    BlockStatement(path: any) {
+    BlockStatement(path: NodePath<babelTypes.BlockStatement> & { isAddLog?: boolean }) {
       if (path?.isAddLog) {
         return;
       }
-      const parentPath = path?.parentPath;
+      const parentNode = path?.parentPath;
       // 判断是不是方法
-      if (!babelTypes.isMethod(parentPath?.node)) {
+      if (!babelTypes.isMethod(parentNode?.node)) {
         return;
       }
-      const method = parentPath?.node?.key?.name;
-      if (method === '') {
+      // 先强转类型
+      const identifier = parentNode?.node.key as babelTypes.Identifier;
+      // 在根据 beabel 的 api 判断具体是不是对应的类型
+      if (!babelTypes.isIdentifier(identifier)) {
         return;
       }
+      const method = identifier.name;
       const templateEvent = getTemplateEventByMethod(method, vueTemplateEvents);
       if (templateEvent) {
-        let methodContainsEmit = false;
-        path.traverse({
-          MemberExpression(innerPath: any) {
-            if (
-              babelTypes.isThisExpression(innerPath.node.object) &&
-              babelTypes.isIdentifier(innerPath.node.property) &&
-              innerPath?.node?.property?.name === '$emit'
-            ) {
-              methodContainsEmit = true;
-            }
-          }
-        });
-        const filePath = resourcePath;
-        const escapedFilePath = JSON.stringify(filePath);
-        const newTemplate = template.ast(`
-            console.log('------vueTemplateLog------')
-            console.log('事件名称: ${templateEvent.event}');
-            console.log('方法名称: ${method}');
-            console.log('文件位置: ${escapedFilePath}');
-            console.log('是否触发emit: ${methodContainsEmit ? '是' : '否'}');
-            console.log('------vueTemplateLog------')
-          `);
-    
-        path.unshiftContainer('body', newTemplate);
-        path.isAddLog = true;
+        addLogAst(path, method, resourcePath, templateEvent);
       }
     },
-    ArrowFunctionExpression(path: any) {
-      const parent = path.parent as any;
-      const { name } = parent?.id;
+    ArrowFunctionExpression(path) {
+      const parentNode = path.parent as babelTypes.VariableDeclarator;
+      if (!babelTypes.isIdentifier(parentNode.id)) {
+        return;
+      }
+      const name = parentNode.id.name;
       const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
       if (templateEvent) {
         path.traverse({
-          BlockStatement(block: any) {
+          BlockStatement(
+            block: NodePath<babelTypes.BlockStatement> & {
+              isAddLog?: boolean;
+            }
+          ) {
             if (block?.isAddLog) {
               return;
             }
-            const filePath = resourcePath;
-            const escapedFilePath = JSON.stringify(filePath);
-            const newTemplate = template.ast(`
-              console.log('------vueTemplateLog------')
-              console.log('事件名称: ${templateEvent.event}');
-              console.log('方法名称: ${name}');
-              console.log('文件位置: ${escapedFilePath}');
-              console.log('是否触发emit: ${false ? '是' : '否'}');
-              console.log('------vueTemplateLog------')
-            `);
-
-            block.unshiftContainer('body', newTemplate);
-            block.isAddLog = true;
+            addLogAst(path, name, resourcePath, templateEvent);
           }
         });
       }
@@ -161,23 +156,15 @@ export function traverseVueScriptAst(
       const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
       if (templateEvent) {
         path.traverse({
-          BlockStatement(block: any) {
+          BlockStatement(
+            block: NodePath<babelTypes.BlockStatement> & {
+              isAddLog?: boolean;
+            }
+          ) {
             if (block?.isAddLog) {
               return;
             }
-            const filePath = resourcePath;
-            const escapedFilePath = JSON.stringify(filePath);
-            const newTemplate = template.ast(`
-              console.log('------vueTemplateLog------')
-              console.log('事件名称: ${templateEvent.event}');
-              console.log('方法名称: ${name}');
-              console.log('文件位置: ${escapedFilePath}');
-              console.log('是否触发emit: ${false ? '是' : '否'}');
-              console.log('------vueTemplateLog------')
-            `);
-
-            block.unshiftContainer('body', newTemplate);
-            block.isAddLog = true;
+            addLogAst(path, name, resourcePath, templateEvent);
           }
         });
       }
@@ -188,7 +175,7 @@ export function traverseVueScriptAst(
 }
 
 /**
- * @description 替换源代码。
+ * @desc 替换源代码。
  * @param content
  * @param replaceContent
  * @returns
@@ -233,13 +220,11 @@ export function addTemplateEventLog(source: string, resourcePath: string, events
   }
 
   const templateEvents = getVueTempllateEvents(templateAst, events);
-
   if (!templateEvents.length) {
     return source;
   }
 
   const scriptCode = vueCodeAst.descriptor.script?.content || vueCodeAst.descriptor.scriptSetup?.content;
-
   if (!scriptCode) {
     return source;
   }
