@@ -146,7 +146,7 @@ export function traverseVueScriptAst(
             if (block?.isAddLog) {
               return;
             }
-            addLogAst(path, name, resourcePath, templateEvent);
+            addLogAst(block, name, resourcePath, templateEvent);
           }
         });
       }
@@ -164,7 +164,7 @@ export function traverseVueScriptAst(
             if (block?.isAddLog) {
               return;
             }
-            addLogAst(path, name, resourcePath, templateEvent);
+            addLogAst(block, name, resourcePath, templateEvent);
           }
         });
       }
