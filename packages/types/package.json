@@ -2,8 +2,7 @@
   "name": "@mwork-plugins/types",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
-  "types": "./dist",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
