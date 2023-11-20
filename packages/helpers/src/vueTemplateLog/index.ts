@@ -138,9 +138,7 @@ export function traverseVueScriptAst(
       const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
       if (templateEvent) {
         path.traverse({
-          BlockStatement(
-            block: NodePath<babelTypes.BlockStatement>
-          ) {
+          BlockStatement(block: NodePath<babelTypes.BlockStatement>) {
             if (path?.isAddLog) {
               return;
             }
@@ -155,9 +153,7 @@ export function traverseVueScriptAst(
       const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
       if (templateEvent) {
         path.traverse({
-          BlockStatement(
-            block: NodePath<babelTypes.BlockStatement>
-          ) {
+          BlockStatement(block: NodePath<babelTypes.BlockStatement>) {
             if (path?.isAddLog) {
               return;
             }
@@ -227,22 +223,20 @@ export function addTemplateEventLog(source: string, resourcePath: string, events
     return source;
   }
 
-  const scriptAst = parse(scriptCode, {
-    sourceType: "unambiguous",
-    ast: true,
-    filename: `${Date.now()}.ts`,
-    presets: ["@babel/preset-typescript"],
-  });
-
-  if (!scriptAst) {
-    return source;
-  }
-
   try {
+    const scriptAst = parse(scriptCode, {
+      sourceType: 'unambiguous',
+      ast: true,
+      filename: `${Date.now()}.ts`,
+      presets: ['@babel/preset-typescript']
+    });
+
+    if (!scriptAst) {
+      return source;
+    }
     const withLogScriptAst = traverseVueScriptAst(scriptAst, templateEvents, resourcePath);
     const { code } = generate(withLogScriptAst);
     const logSource = replaceScriptCode(source, code);
-
     return logSource;
   } catch (e) {
     return source;

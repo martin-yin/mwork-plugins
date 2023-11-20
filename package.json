@@ -12,13 +12,17 @@
     "type": "git",
     "url": "git+https://github.com/martin-yin/mwork-plugins.git"
   },
-  "keywords": ["webpack", "vite", "plugins", "loader"],
+  "keywords": [
+    "webpack",
+    "vite",
+    "plugins",
+    "loader"
+  ],
   "author": "martin-yin",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.23.3",
     "@babel/generator": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
     "@babel/traverse": "^7.23.3",
     "@babel/types": "^7.23.3",
     "@changesets/cli": "^2.26.2",
