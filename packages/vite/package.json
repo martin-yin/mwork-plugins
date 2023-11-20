@@ -1,6 +1,6 @@
 {
   "name": "@mwork-plugins/vite",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@mwork-plugins/helpers": "^0.0.0",
-    "@mwork-plugins/types": "^0.0.0"
+    "@mwork-plugins/helpers": "^0.0.1",
+    "@mwork-plugins/types": "^0.0.1"
   },
   "devDependencies": {
     "vite": "^4.5.0"
