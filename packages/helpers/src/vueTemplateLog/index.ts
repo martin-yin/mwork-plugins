@@ -92,7 +92,6 @@ function addLogAst(path: any, method: string, resourcePath: string, templateEven
     `);
 
   path.unshiftContainer('body', newTemplate);
-  path.isAddLog = true;
 }
 
 /**
@@ -127,9 +126,10 @@ export function traverseVueScriptAst(
       const templateEvent = getTemplateEventByMethod(method, vueTemplateEvents);
       if (templateEvent) {
         addLogAst(path, method, resourcePath, templateEvent);
+        path.isAddLog = true;
       }
     },
-    ArrowFunctionExpression(path) {
+    ArrowFunctionExpression(path: NodePath<babelTypes.ArrowFunctionExpression> & { isAddLog?: boolean }) {
       const parentNode = path.parent as babelTypes.VariableDeclarator;
       if (!babelTypes.isIdentifier(parentNode.id)) {
         return;
@@ -139,32 +139,30 @@ export function traverseVueScriptAst(
       if (templateEvent) {
         path.traverse({
           BlockStatement(
-            block: NodePath<babelTypes.BlockStatement> & {
-              isAddLog?: boolean;
-            }
+            block: NodePath<babelTypes.BlockStatement>
           ) {
-            if (block?.isAddLog) {
+            if (path?.isAddLog) {
               return;
             }
             addLogAst(block, name, resourcePath, templateEvent);
+            path.isAddLog = true;
           }
         });
       }
     },
-    FunctionDeclaration(path) {
+    FunctionDeclaration(path: NodePath<babelTypes.FunctionDeclaration> & { isAddLog?: boolean }) {
       const name = path.node?.id?.name || '';
       const templateEvent = getTemplateEventByMethod(name, vueTemplateEvents);
       if (templateEvent) {
         path.traverse({
           BlockStatement(
-            block: NodePath<babelTypes.BlockStatement> & {
-              isAddLog?: boolean;
-            }
+            block: NodePath<babelTypes.BlockStatement>
           ) {
-            if (block?.isAddLog) {
+            if (path?.isAddLog) {
               return;
             }
             addLogAst(block, name, resourcePath, templateEvent);
+            path.isAddLog = true;
           }
         });
       }
@@ -230,8 +228,10 @@ export function addTemplateEventLog(source: string, resourcePath: string, events
   }
 
   const scriptAst = parse(scriptCode, {
+    sourceType: "unambiguous",
     ast: true,
-    filename: `${Date.now()}.ts`
+    filename: `${Date.now()}.ts`,
+    presets: ["@babel/preset-typescript"],
   });
 
   if (!scriptAst) {
@@ -241,9 +241,9 @@ export function addTemplateEventLog(source: string, resourcePath: string, events
   try {
     const withLogScriptAst = traverseVueScriptAst(scriptAst, templateEvents, resourcePath);
     const { code } = generate(withLogScriptAst);
-    const withLogSource = replaceScriptCode(source, code);
+    const logSource = replaceScriptCode(source, code);
 
-    return withLogSource;
+    return logSource;
   } catch (e) {
     return source;
   }
