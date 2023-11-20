@@ -1,11 +1,17 @@
 {
-  "name": "root",
+  "name": "mwork-plugins",
   "version": "0.0.0",
-  "description": "",
+  "description": "根据开发中的业务抽离出的功能",
+  "private": true,
   "scripts": {
     "build": "pnpm --filter \"@mwork-plugins/**\" build"
   },
-  "keywords": [],
+  "homepage": "https://github.com/martin-yin/mwork-plugins",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martin-yin/mwork-plugins.git"
+  },
+  "keywords": ["webpack", "vite", "plugins", "loader"],
   "author": "martin-yin",
   "license": "MIT",
   "devDependencies": {

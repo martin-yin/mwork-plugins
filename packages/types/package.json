@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "types": "./dist",
+  "file": ["dist"],
   "scripts": {
     "build": "tsup src/index.ts --dts-only "
   },
