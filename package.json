@@ -4,7 +4,8 @@
   "description": "根据开发中的业务抽离出的功能",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter \"@mwork-plugins/**\" build"
+    "build": "pnpm --filter \"@mwork-plugins/**\" build",
+    "publish": "pnpm run build && pnpm publish -r"
   },
   "homepage": "https://github.com/martin-yin/mwork-plugins",
   "repository": {
