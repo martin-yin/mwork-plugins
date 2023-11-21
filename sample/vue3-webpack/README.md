@@ -1,4 +1,4 @@
-# b
+# vue3-webpack
 
 ## Project setup
 ```
