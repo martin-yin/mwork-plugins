@@ -56,8 +56,6 @@ class ModulesAnalysis implements IModulesAnalysis {
       const filesPath = [...stats.compilation.fileDependencies].filter(filePath => this.isAcceptFile(filePath));
       const filesModuleMap = await getImportsFilesMap(this.cwd, filesPath);
       const modulesUseInfo = calculateModulesUseInfo(filesModuleMap, this.ignoreModules, this.nodeModules);
-
-      debugger;
       this.outPutFile(modulesUseInfo);
     });
   }
