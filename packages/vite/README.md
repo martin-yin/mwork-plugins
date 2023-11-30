@@ -1,6 +1,6 @@
 # @mwork-plugins/vite
 
-## Loader
+## Plugins
 
 ### VueTemplateLog
 
@@ -8,10 +8,22 @@
 
 #### options
 
-| 名称 | 类型 | 描述 | 默认值 |
-
+|     名称     |    类型     | 描述                | 默认值          |
 | :----------: | :---------: | :------------------ | :-------------- |
+| **`enable`** | `{Boolean}` | 是否开loader        | 默认值: `false` |
+| **`events`** |  `{Array}`  | 哪些事件需要增加log | 默认值: `[]`    |
 
-| **`enable`** | `{Boolean}` | 是否开loader | 默认值: `false` |
+#### 使用案例
 
-| **`events`** | `{Array}` | 哪些事件需要增加log | 默认值: `[]` |
+```js
+import { vueTemplateLog } from '@mwork-plugins/vite';
+// vite.config.js
+export default defineConfig({
+  plugins: [
+    vueTemplateLog({
+      enable: true,
+      events: ['ok', 'click']
+    })
+  ]
+});
+```

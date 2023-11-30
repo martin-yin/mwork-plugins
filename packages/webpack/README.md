@@ -54,6 +54,22 @@ module.exports = defineConfig({
 | **`extraModules`**  |  `{Array}`  | 额外的包，补充在package.json 中没有的包 | 默认值: `[]`                                |
 |  **`outputType`**   | `{String}`  | 输出方式, 支持 `json` `markdown`        | 默认值: `'json'`                            |
 
+#### 使用案例
+
+```js
+// vue.config.js
+module.exports = defineConfig({
+  transpileDependencies: true,
+  configureWebpack: {
+    plugins: [
+      new ModulesAnalysis({
+        enable: true
+      })
+    ]
+  }
+});
+```
+
 ### SafeDeleteFile
 
 用于分析项目中有哪些文件没有被使用，也许可以安全删除。
@@ -68,3 +84,19 @@ module.exports = defineConfig({
 | **`folderPath`** |      `{String}`      | 文件路径                         | 默认值: `cli` 执行目录下的 `src` |
 |   **`ignore`**   | `{String}` `{Array}` | 需要被忽略文件夹或文件           | 默认值: []                       |
 | **`outputType`** |      `{String}`      | 输出方式, 支持 `json` `markdown` | 默认值: `'json'`                 |
+
+#### 使用案例
+
+```js
+// vue.config.js
+module.exports = defineConfig({
+  transpileDependencies: true,
+  configureWebpack: {
+    plugins: [
+      new SafeDeleteFile({
+        enable: true
+      })
+    ]
+  }
+});
+```
