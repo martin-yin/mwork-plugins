@@ -8,10 +8,10 @@
 
 #### options
 
-|     名称     |    类型     | 描述                | 默认值          |
-| :----------: | :---------: | :------------------ | :-------------- |
-| **`enable`** | `{Boolean}` | 是否开loader        | 默认值: `false` |
-| **`events`** |  `{Array}`  | 哪些事件需要增加log | 默认值: `[]`    |
+|     名称     |    类型     | 描述                | 默认值         |
+| :----------: | :---------: | :------------------ | :------------- |
+| **`enable`** | `{Boolean}` | 是否开loader        | 默认值:`false` |
+| **`events`** |  `{Array}`  | 哪些事件需要增加log | 默认值:`[]`    |
 
 #### 使用案例
 
@@ -45,14 +45,14 @@ module.exports = defineConfig({
 
 #### options
 
-|        名称         |    类型     | 描述                                    | 默认值                                      |
-| :-----------------: | :---------: | :-------------------------------------- | :------------------------------------------ |
-|    **`enable`**     | `{Boolean}` | 是否开启插件                            | 默认值: `false`                             |
-|    **`enable`**     | `{Boolean}` | 是否开启插件                            | 默认值: `false`                             |
-|  **`acceptType`**   |  `{Array}`  | 文件类型                                | 默认值: `['vue', 'js', 'jsx', 'tsx', 'ts']` |
-| **`ignoreModules`** |  `{Array}`  | 需要被忽略的 node_module 名称           | 默认值: `['vue', 'vue-router']`             |
-| **`extraModules`**  |  `{Array}`  | 额外的包，补充在package.json 中没有的包 | 默认值: `[]`                                |
-|  **`outputType`**   | `{String}`  | 输出方式, 支持 `json` `markdown`        | 默认值: `'json'`                            |
+|        名称         |    类型     | 描述                                    | 默认值                                     |
+| :-----------------: | :---------: | :-------------------------------------- | :----------------------------------------- |
+|    **`enable`**     | `{Boolean}` | 是否开启插件                            | 默认值:`false`                             |
+|    **`enable`**     | `{Boolean}` | 是否开启插件                            | 默认值:`false`                             |
+|  **`acceptType`**   |  `{Array}`  | 文件类型                                | 默认值:`['vue', 'js', 'jsx', 'tsx', 'ts']` |
+| **`ignoreModules`** |  `{Array}`  | 需要被忽略的 node_module 名称           | 默认值:`['vue', 'vue-router']`             |
+| **`extraModules`**  |  `{Array}`  | 额外的包，补充在package.json 中没有的包 | 默认值:`[]`                                |
+|  **`outputType`**   | `{String}`  | 输出方式, 支持 `json` `markdown`        | 默认值:`'json'`                            |
 
 #### 使用案例
 
@@ -78,12 +78,12 @@ module.exports = defineConfig({
 
 #### options
 
-|       名称       |         类型         | 描述                             | 默认值                           |
-| :--------------: | :------------------: | :------------------------------- | :------------------------------- |
-|   **`enable`**   |     `{Boolean}`      | 是否开启插件                     | 默认值: `false`                  |
-| **`folderPath`** |      `{String}`      | 文件路径                         | 默认值: `cli` 执行目录下的 `src` |
-|   **`ignore`**   | `{String}` `{Array}` | 需要被忽略文件夹或文件           | 默认值: []                       |
-| **`outputType`** |      `{String}`      | 输出方式, 支持 `json` `markdown` | 默认值: `'json'`                 |
+|       名称       |         类型         | 描述                             | 默认值                          |
+| :--------------: | :------------------: | :------------------------------- | :------------------------------ |
+|   **`enable`**   |     `{Boolean}`      | 是否开启插件                     | 默认值:`false`                  |
+| **`folderPath`** |      `{String}`      | 文件路径                         | 默认值:`cli` 执行目录下的 `src` |
+|   **`ignore`**   | `{String}` `{Array}` | 需要被忽略文件夹或文件           | 默认值: []                      |
+| **`outputType`** |      `{String}`      | 输出方式, 支持 `json` `markdown` | 默认值:`'json'`                 |
 
 #### 使用案例
 
@@ -107,9 +107,9 @@ module.exports = defineConfig({
 
 #### options
 
-|     名称     |    类型     | 描述         | 默认值          |
-| :----------: | :---------: | :----------- | :-------------- |
-| **`enable`** | `{Boolean}` | 是否开启插件 | 默认值: `false` |
+|     名称     |    类型     | 描述         | 默认值         |
+| :----------: | :---------: | :----------- | :------------- |
+| **`enable`** | `{Boolean}` | 是否开启插件 | 默认值:`false` |
 
 #### 使用案例
 
@@ -120,9 +120,9 @@ module.exports = defineConfig({
     plugins: [
       new InjectEntryCode({
         enable: true,
-        // 某个项目在开发阶段，因历史原因 遗留的 `console` 特别多的时候，影响开发调试。
-        // 注入一段代码重写 `console` 为空函数（实现清理旧 `console` 的目的，使用 `mconsole`(重写前的 `console api`)打印日志。
-        // 三方插件可以压缩代码丢弃 `console`，但是代码压缩会增加开发者机器压力。
+        // 某个项目在开发阶段，因历史原因 遗留的 console 特别多的时候，影响开发调试。
+        // 注入一段代码重写 console 为空函数（实现清理旧 console 的目的，使用 mconsole(重写前的 console api )打印日志。
+        // 三方插件可以压缩代码丢弃 console，但是代码压缩会增加开发者机器压力。
         injectCode: `
             window.mconsole = { ...console }
             const type = ['log', 'info', 'error', 'warn']
