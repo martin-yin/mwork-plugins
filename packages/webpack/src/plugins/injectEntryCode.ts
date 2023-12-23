@@ -1,17 +1,21 @@
 import type { Compiler } from "webpack";
 
-const pluginName = 'ReplaceConsole';
+const pluginName = 'InjectEntryCode';
 
-class ReplaceConsole {
+class InjectEntryCode {
     private enable: boolean = false;
+    private injectCode = '';
+
     constructor(options: {
         enable: boolean
+        injectCode: string
     }) {
         this.enable = options.enable;
+        this.injectCode = options.injectCode;
     }
 
     apply(compiler: Compiler) {
-        if (!this.enable) {
+        if (!this.enable && !this.injectCode.length) {
             return;
         }
 
@@ -22,14 +26,8 @@ class ReplaceConsole {
                     if (entrys.includes(chunk.id as string)) {
                         chunk.files.forEach((file) => {
                             let originalCode = compilation.assets[file].source();
-                            let injectedCode = `
-                                window.mconsole = { ...console }
-                                const type = ['log', 'info', 'error', 'warn']
-                                type.forEach((item) => {
-                                    window.console[item] = (...args) => { }
-                                })
-                            `;
-                            let modifiedCode = originalCode + '\n' + injectedCode;
+
+                            let modifiedCode = originalCode + '\n' + this.injectCode;
                             compilation.assets[file] = {
                                 source: () => modifiedCode,
                                 size: () => modifiedCode.length
@@ -42,4 +40,4 @@ class ReplaceConsole {
     }
 }
 
-export default ReplaceConsole
+export default InjectEntryCode

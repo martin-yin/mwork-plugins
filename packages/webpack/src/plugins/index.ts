@@ -1,5 +1,5 @@
 import SafeDeleteFile from './safeDeleteFile';
 import ModulesAnalysis from './modulesAnalysis';
-import ReplaceConsole from './replaceConsole';
+import InjectEntryCode from './injectEntryCode';
 
-export { SafeDeleteFile, ModulesAnalysis, ReplaceConsole };
+export { SafeDeleteFile, ModulesAnalysis, InjectEntryCode };

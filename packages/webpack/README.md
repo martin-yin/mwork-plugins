@@ -101,13 +101,9 @@ module.exports = defineConfig({
 });
 ```
 
-### ReplaceConsole
+### InjectEntryCode
 
-某个项目开发阶段，因历史原因 遗留的 `console` 特别多的时候，影响开发调试，可以使用该插件。
-
-该插件会将项目中的 `console` 重写为空函数（实现清理旧 `console` 的目的），如果需要使用 `console`, 则可以使用 `mconsole`(重写前的 `console api`)打印日志。
-
-tips: 三方插件可以压缩代码丢弃 `console`，但是代码压缩会增加开发者机器压力。
+向主入口文件注入代码。
 
 #### options
 
@@ -122,8 +118,19 @@ tips: 三方插件可以压缩代码丢弃 `console`，但是代码压缩会增�
 module.exports = defineConfig({
   configureWebpack: {
     plugins: [
-      new ReplaceConsole({
-        enable: true
+      new InjectEntryCode({
+        enable: true,
+        // 某个项目在开发阶段，因历史原因 遗留的 `console` 特别多的时候，影响开发调试。
+        // 注入一段代码重写 `console` 为空函数（实现清理旧 `console` 的目的，使用 `mconsole`(重写前的 `console api`)打印日志。
+        // 三方插件可以压缩代码丢弃 `console`，但是代码压缩会增加开发者机器压力。
+        injectCode: `
+            window.mconsole = { ...console }
+            const type = ['log', 'info', 'error', 'warn']
+            type.forEach((item) => {
+                window.console[item] = (...args) => { }
+            })
+            mconsole.log('注入成功了！')
+        `
       })
     ]
   }
