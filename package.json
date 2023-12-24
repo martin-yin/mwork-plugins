@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "build": "pnpm --filter \"@mwork-plugins/**\" build",
+    "changeset": "npx changeset",
+    "version": "npx changeset version",
     "publish": "pnpm run build && pnpm publish -r"
   },
   "homepage": "https://github.com/martin-yin/mwork-plugins",
