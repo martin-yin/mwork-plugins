@@ -1,5 +1,11 @@
 # @mwork-plugins/utils
 
+## 0.0.3
+
+### Patch Changes
+
+- 新的插件 injectEntryCode
+
 ## 0.0.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @mwork-plugins/webpack
 
+## 0.0.3
+
+### Patch Changes
+
+- 新的插件 injectEntryCode
+- Updated dependencies
+  - @mwork-plugins/helpers@0.0.3
+  - @mwork-plugins/types@0.0.3
+  - @mwork-plugins/utils@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
