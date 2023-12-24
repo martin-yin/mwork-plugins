@@ -9,7 +9,12 @@
   "scripts": {
     "build": "tsup src/index.ts --dts-only "
   },
+  "homepage": "https://github.com/martin-yin/mwork-plugins",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martin-yin/mwork-plugins.git"
+  },
   "keywords": [],
-  "author": "",
+  "author": "martin-yin",
   "license": "MIT"
 }
