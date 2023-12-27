@@ -3,12 +3,6 @@ import { Compiler } from 'webpack';
 
 export abstract class IModulesAnalysis {
   /**
-   * @desc 用于判断哪些文件可以被解析。
-   * @param file
-   */
-  abstract isAcceptFile(file: string): boolean;
-
-  /**
    * @desc 输出结果，输出方式根据 outputType 配置决定。
    * @param content
    */
@@ -17,7 +11,7 @@ export abstract class IModulesAnalysis {
    * @desc webpack apply
    * @param compiler
    */
-  apply(compiler: Compiler): void {}
+  apply(compiler: Compiler): void { }
 }
 
 /**
@@ -25,7 +19,7 @@ export abstract class IModulesAnalysis {
  */
 export type ModulesAnalysisOptions = {
   enable: boolean;
-  acceptType: Array<string>;
+  allowedTypes: Array<string>;
   ignoreModules: Array<string>;
   outputType: 'json' | 'markdown';
   allFolderFiles: Array<string>;

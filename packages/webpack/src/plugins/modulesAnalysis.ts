@@ -2,6 +2,7 @@ import {
   calculateModulesUseInfo,
   getImportsFilesMap,
   getPackageNodeModules,
+  isFileInAllowedTypes,
   modulesAnalysisMarkdown
 } from '@mwork-plugins/helpers';
 import { IModulesAnalysis, ModulesAnalysisOptions, ModulesUseInfoType } from '@mwork-plugins/types/src';
@@ -13,7 +14,7 @@ const pluginName = 'ModulesAnalysis';
 class ModulesAnalysis implements IModulesAnalysis {
   private enable: boolean = false;
   private cwd = process.cwd();
-  private acceptType: Array<string> = [];
+  private allowedTypes: Array<string> = [];
   private ignoreModules: Array<string> = [];
   private nodeModules: Array<string> = [];
   private outputType: 'json' | 'markdown';
@@ -21,22 +22,11 @@ class ModulesAnalysis implements IModulesAnalysis {
 
   constructor(options: ModulesAnalysisOptions) {
     this.enable = options.enable;
-    this.acceptType = options?.acceptType || ['vue', 'js', 'jsx', 'tsx', 'ts'];
-    /**
-     * @desc 用于判断哪些 node 包会被忽略。
-     */
+    this.allowedTypes = options?.allowedTypes || ['vue', 'js', 'jsx', 'tsx', 'ts'];
     this.ignoreModules = options?.ignoreModules || ['vue', 'vue-router'];
     this.outputType = options?.outputType || 'json';
     this.extraModules = options?.extraModules || [];
     this.nodeModules = getPackageNodeModules(this.cwd, this.extraModules);
-  }
-
-  isAcceptFile(file: string) {
-    if (file.includes('node_modules')) {
-      return false;
-    }
-
-    return this.acceptType.includes(file.split('.')?.pop() || '');
   }
 
   outPutFile(content: ModulesUseInfoType) {
@@ -53,7 +43,8 @@ class ModulesAnalysis implements IModulesAnalysis {
     }
 
     compiler.hooks.done.tap(pluginName, async stats => {
-      const filesPath = [...stats.compilation.fileDependencies].filter(filePath => this.isAcceptFile(filePath));
+      const filesPath = [...stats.compilation.fileDependencies].filter(filePath =>
+        isFileInAllowedTypes(filePath, this.allowedTypes));
       const filesModuleMap = await getImportsFilesMap(this.cwd, filesPath);
       const modulesUseInfo = calculateModulesUseInfo(filesModuleMap, this.ignoreModules, this.nodeModules);
       this.outPutFile(modulesUseInfo);

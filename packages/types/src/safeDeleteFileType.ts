@@ -20,7 +20,7 @@ export abstract class ISafeDeleteFile {
    * @desc webpack apply
    * @param compiler
    */
-  apply(compiler: Compiler): void {}
+  apply(compiler: Compiler): void { }
 }
 
 export type SafeDeleteFileOptions = {
