@@ -22,7 +22,6 @@ export type ModulesAnalysisOptions = {
   allowedTypes: Array<string>;
   ignoreModules: Array<string>;
   outputType: 'json' | 'markdown';
-  allFolderFiles: Array<string>;
   extraModules: Array<string>;
 };
 
