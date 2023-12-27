@@ -1,3 +1,4 @@
+import { CodeAnalysisSuitesOptions } from "@mwork-plugins/types/src/codeAnalysisSuites";
 import type { Compiler } from "webpack";
 
 const pluginName = 'CodeAnalysisSuites';
@@ -15,7 +16,26 @@ const pluginName = 'CodeAnalysisSuites';
  * ===== 可复用已有代码 =====
  * 4. vue 文件中 emit 的名称与文件位置（针对做统一 emit 使用）
  */
+import path from 'node:path';
+
 class CodeAnalysisSuites {
+    private options: CodeAnalysisSuitesOptions;
+    constructor(options: CodeAnalysisSuitesOptions) {
+        // 初始化参数
+        this.options = {
+            enable: false,
+            modulesAnalysis: {
+                allowedTypes: options?.modulesAnalysis?.allowedTypes || ['vue', 'js', 'jsx', 'tsx', 'ts'],
+                ignoreModules: options?.modulesAnalysis?.ignoreModules || ['vue', 'vue-router'],
+                extraModules: options?.modulesAnalysis?.extraModules || [],
+            },
+            safeDeleteFile: {
+                folderPath: options?.safeDeleteFile?.folderPath || path.join(process.cwd(), '/src'),
+                ignore: options?.safeDeleteFile?.ignore || [],
+            },
+        };
+    }
+
     apply(compiler: Compiler) {
     }
 }
