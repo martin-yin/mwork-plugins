@@ -16,7 +16,6 @@ class ModulesAnalysis implements IModulesAnalysis {
   private cwd = process.cwd();
   private allowedTypes: Array<string> = [];
   private ignoreModules: Array<string> = [];
-  private nodeModules: Array<string> = [];
   private outputType: 'json' | 'markdown';
   private extraModules: Array<string> = [];
 
@@ -26,7 +25,6 @@ class ModulesAnalysis implements IModulesAnalysis {
     this.ignoreModules = options?.ignoreModules || ['vue', 'vue-router'];
     this.outputType = options?.outputType || 'json';
     this.extraModules = options?.extraModules || [];
-    this.nodeModules = getPackageNodeModules(this.cwd, this.extraModules);
   }
 
   outPutFile(content: ModulesUseInfoType) {
@@ -46,7 +44,8 @@ class ModulesAnalysis implements IModulesAnalysis {
       const filesPath = [...stats.compilation.fileDependencies].filter(filePath =>
         isFileInAllowedTypes(filePath, this.allowedTypes));
       const filesModuleMap = await getImportsFilesMap(this.cwd, filesPath);
-      const modulesUseInfo = calculateModulesUseInfo(filesModuleMap, this.ignoreModules, this.nodeModules);
+      const nodeModules = getPackageNodeModules(this.cwd, this.extraModules);
+      const modulesUseInfo = calculateModulesUseInfo(filesModuleMap, this.ignoreModules, nodeModules);
       this.outPutFile(modulesUseInfo);
     });
   }
